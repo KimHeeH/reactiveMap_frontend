@@ -1,37 +1,41 @@
 <template>
   <div class="container">
-    <SearchBar @search="onSearch" />
+    <!--props-->
+    <SearchBar :value="searchQuery" @updateSearch="updateSearchQuery" />
     <div class="mapContainer">
-      <KakaoMap ref="kakaoMap" />
+      <KakaoMap ref="kakaoMap" @updatePlaceName="updatePlaceName" />
     </div>
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { fetchUser } from "./api/userService";
 import KakaoMap from "./components/kakaoMap.vue";
 import SearchBar from "./components/SearchBar.vue";
 export default {
   data() {
     return {
-      user: [],
+      // user: [],
+      searchQuery: "" as string, // 검색창의 입력값
     };
   },
-  async created() {
-    this.user = await fetchUser();
-  },
+  // async created() {
+  //   this.user = await fetchUser();
+  // },
   name: "App",
   components: {
     KakaoMap,
     SearchBar,
   },
-  mounted() {
-    console.log("App.vue mounted");
-  },
+
   methods: {
-    onSearch(keyword) {
-      console.log("검색어:", keyword);
-      this.$refs.kakaoMap.searchLocation(keyword);
+    updatePlaceName(newPlaceName: string | null) {
+      // 지도에서 전달받은 placeName을 검색창으로 설정
+      this.searchQuery = newPlaceName || "";
+    },
+    updateSearchQuery(newSearchQuery: string) {
+      // 검색창에서 업데이트된 값을 처리 (필요 시)
+      this.searchQuery = newSearchQuery;
     },
   },
 };

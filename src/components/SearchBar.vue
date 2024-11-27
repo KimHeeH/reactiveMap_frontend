@@ -8,7 +8,8 @@
     <!-- 검색 입력 -->
     <input
       type="text"
-      v-model="keyword"
+      :value="value"
+      @input="$emit('updateSearch', $event.target.value)"
       placeholder="가고싶은 장소를 검색해보세요"
       @keyup.enter="search"
     />
@@ -39,6 +40,12 @@ import CloseIcon from "../assets/icons/CloseIcon.svg";
 import SearchIcon from "../assets/icons/SearchIocn.svg";
 import logo from "../assets/icons/logo.svg";
 export default {
+  props: {
+    value: {
+      type: String,
+      required: true,
+    },
+  },
   components: {
     MenuIcon,
     CloseIcon,
@@ -54,7 +61,7 @@ export default {
   },
   methods: {
     search() {
-      this.$emit("search", this.keyword);
+      alert(`검색된 값: ${this.value}`);
     },
     toggleMenu() {
       this.menuOpen = !this.menuOpen; // 메뉴 열림/닫힘 토글

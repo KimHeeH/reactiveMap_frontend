@@ -1,112 +1,106 @@
 <template>
   <div id="map-container" style="position: relative; width: 100%; height: 100%">
-    <!-- 지도 -->
     <div id="map" style="width: 100%; height: 100%"></div>
-
-    <!-- 클릭한 장소 정보를 표시하는 DIV -->
-    <div class="place-name" v-if="placeName">
+    <div v-if="placeName" class="place-name">
       <div>{{ placeName }}</div>
-      <AddIcon class="addIcon" />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
-import AddIcon from "../assets/icons/AddIcon.svg";
-export default defineComponent({
-  components: {
-    AddIcon,
-  },
-  name: "KakaoMap",
-  setup() {
-    const map = ref<any>(null);
-    const marker = ref<any>(null);
-    const infoWindow = ref<any>(null);
-    const placeName = ref<string | null>(null); // 클릭한 장소 이름
-
-    let geocoder: any = null; // Geocoder를 나중에 초기화
-
-    const initMap = () => {
-      const container = document.getElementById("map") as HTMLElement;
-      const options = {
-        center: new (window as any).kakao.maps.LatLng(37.5666805, 126.9784147), // 초기 중심 좌표
-        level: 3, // 확대 레벨
-      };
-      map.value = new (window as any).kakao.maps.Map(container, options); // 지도 생성
-      geocoder = new (window as any).kakao.maps.services.Geocoder();
-
-      (window as any).kakao.maps.event.addListener(
-        map.value,
-        "click",
-        (mouseEvent: any) => {
-          const latlng = mouseEvent.latLng;
-
-          // 마커 생성 또는 위치 업데이트
-          if (!marker.value) {
-            marker.value = new (window as any).kakao.maps.Marker({
-              position: latlng,
-              map: map.value,
-            });
-          } else {
-            marker.value.setPosition(latlng);
-          }
-
-          if (infoWindow.value) {
-            infoWindow.value.close();
-          }
-
-          // Geocoder로 주소 가져오기
-          geocoder.coord2Address(
-            latlng.getLng(),
-            latlng.getLat(),
-            (result: any, status: any) => {
-              if (status === (window as any).kakao.maps.services.Status.OK) {
-                const address =
-                  result[0]?.address?.address_name || "알 수 없는 위치";
-                placeName.value = address; // 장소 이름 저장
-              } else {
-                placeName.value = "장소 정보를 가져올 수 없습니다.";
-              }
-            }
-          );
-
-          // 정보창 생성
-          infoWindow.value = new (window as any).kakao.maps.InfoWindow({
-            content: `<div style="padding:5px;font-size:12px;">${placeName.value}</div>`,
-          });
-          infoWindow.value.open(map.value, marker.value);
-        }
-      );
-    };
-
+export default {
+  data() {
     return {
-      initMap,
-      placeName, // 반환 객체에 placeName 추가
+      placeName: null as string | null,
     };
   },
   mounted() {
-    console.log("KakaoMap.vue mounted");
+    const script = document.createElement("script");
 
-    if (typeof (window as any).kakao === "undefined") {
-      const script = document.createElement("script");
-      script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${
-        import.meta.env.VITE_KAKAO_MAP_API_KEY
-      }&libraries=services&autoload=false`;
-      script.onload = () => {
-        (window as any).kakao.maps.load(() => {
-          this.initMap();
-        });
-      };
-      document.head.appendChild(script);
-    } else {
-      (window as any).kakao.maps.load(() => {
-        this.initMap();
+    script.src = `https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${
+      import.meta.env.VITE_NAVER_CLIENT_ID
+    }`;
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+
+    script.onload = () => {
+      const map = new (window as any).naver.maps.Map("map", {
+        center: new (window as any).naver.maps.LatLng(37.5670135, 126.978374),
+        zoom: 10,
       });
-    }
+
+      let marker: any = null;
+
+      map.addListener("click", (event: any) => {
+        const latlng = event.coord;
+        this.getPlaceName(latlng);
+
+        if (!marker) {
+          marker = new (window as any).naver.maps.Marker({
+            position: latlng,
+            map: map,
+          });
+        } else {
+          marker.setPosition(latlng);
+        }
+      });
+    };
   },
-});
+  methods: {
+    async getPlaceName(latlng: any) {
+      const coords = `${latlng.x},${latlng.y}`;
+
+      try {
+        const response = await fetch(
+          `/api/naver/map-reversegeocode/v2/gc?coords=${coords}&orders=roadaddr,addr&output=json`,
+          {
+            headers: {
+              "X-NCP-APIGW-API-KEY-ID": `${
+                import.meta.env.VITE_NAVER_CLIENT_ID
+              }`, // 명시적으로 문자열 처리
+              "X-NCP-APIGW-API-KEY": `${
+                import.meta.env.VITE_NAVER_CLIENT_SECRET
+              }`, // 명시적으로 문자열 처리
+            },
+          }
+        );
+
+        const data = await response.json();
+        console.log("data는", data);
+        if (data.results && data.results.length > 0) {
+          const result = data.results[0]; // 첫 번째 결과
+          const region = result.region; // 지역 정보
+          const land = result.land; // 상세 정보 (도로명, 건물 번호)
+
+          const area1 = region.area1.name; // 시/도
+          const area2 = region.area2.name; // 구/군
+          const area3 = region.area3.name; // 동/면/리
+          const roadName = land?.name || ""; // 도로명
+          const buildingNumber =
+            land?.number1 && land?.number2
+              ? `${land.number1}-${land.number2}` // 건물 번호
+              : land?.number1 || ""; // 단일 번호
+
+          // 주소 형식 생성
+          const fullAddress = `${area1} ${area2} ${area3} ${roadName} ${buildingNumber}`;
+          const newPlaceName =
+            `${area1} ${area2} ${area3} ${roadName} ${buildingNumber}`.trim();
+          this.placeName = fullAddress.trim(); // 결과 업데이트
+          this.$emit("updatePlaceName", newPlaceName);
+        } else {
+          this.placeName = "주소를 가져올 수 없습니다.";
+        }
+      } catch (error) {
+        console.error("Reverse Geocoding 실패 :", error);
+        this.placeName = "오류 발생";
+        this.$emit("updatePlaceName", null);
+      }
+    },
+  },
+};
 </script>
+
 <style scoped>
 #map-container {
   position: relative;
@@ -114,12 +108,10 @@ export default defineComponent({
 }
 .place-name {
   position: absolute;
-  bottom: 50px; /* 화면 아래에서 50px 위에 배치 */
-  left: 50%; /* 부모 컨테이너의 가로 중앙 */
-  transform: translateX(
-    -50%
-  ); /* 자신의 크기만큼 왼쪽으로 이동하여 정확히 중앙 정렬 */
-  z-index: 100;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 103;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -129,19 +121,5 @@ export default defineComponent({
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   font-size: 16px;
   font-weight: bold;
-}
-.place-name div {
-  background-color: white;
-  width: 300px;
-
-  height: 70px;
-  text-align: center;
-  line-height: 70px;
-}
-.addIcon {
-  z-index: 102;
-  position: absolute;
-  bottom: 10px;
-  left: 300px;
 }
 </style>

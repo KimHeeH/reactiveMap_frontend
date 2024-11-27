@@ -10,4 +10,13 @@ export default defineConfig({
       "@": "/src",
     },
   },
+  server: {
+    proxy: {
+      "/api/naver": {
+        target: "https://naveropenapi.apigw.ntruss.com",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/naver/, ""), // /api/naver 경로를 제거
+      },
+    },
+  },
 });

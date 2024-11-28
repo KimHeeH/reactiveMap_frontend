@@ -58,10 +58,10 @@ export default {
             headers: {
               "X-NCP-APIGW-API-KEY-ID": `${
                 import.meta.env.VITE_NAVER_CLIENT_ID
-              }`, // 명시적으로 문자열 처리
+              }`,
               "X-NCP-APIGW-API-KEY": `${
                 import.meta.env.VITE_NAVER_CLIENT_SECRET
-              }`, // 명시적으로 문자열 처리
+              }`,
             },
           }
         );

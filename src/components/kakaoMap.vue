@@ -121,5 +121,6 @@ export default {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   font-size: 16px;
   font-weight: bold;
+  cursor: pointer;
 }
 </style>

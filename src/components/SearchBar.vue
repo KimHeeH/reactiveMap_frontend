@@ -25,7 +25,12 @@
       </div>
       <div
         class="placeList"
-        v-if="isAuthenticate && searchResults && searchResults.length > 0"
+        v-if="
+          isAuthenticate &&
+          searchResults &&
+          searchResults.length > 0 &&
+          !getDetail
+        "
         style="border-top: 1px solid #d4d4d4; margin-top: 10px"
       >
         <div style="text-align: left; margin-top: 10px">
@@ -35,6 +40,7 @@
           class="place"
           v-for="(result, index) in searchResults"
           :key="index"
+          @click="goDetail(result)"
         >
           <h3>{{ result.title }}</h3>
           <div style="font-size: 15px; margin-top: 10px">
@@ -53,10 +59,29 @@
           >
         </div>
       </div>
-      <div v-if="!searchResults && searchResults.length <= 0">
+      <div class="noResult" v-if="isAuthenticate && searchResults.length === 0">
+        <div><xIcon /></div>
         <p>검색 결과가 없습니다.</p>
       </div>
-
+      <div v-if="getDetail">
+        <div class="place-img">이미지</div>
+        <div class="place-title">{{ place.title }}</div>
+        <div class="place-address">{{ place.address }}</div>
+        <div class="place-buttons">
+          <div class="button-layoyt">
+            <SaveIcon style="cursor: pointer" />
+            <div>저장</div>
+          </div>
+          <div class="button-layoyt">
+            <MemoIcon style="cursor: pointer" />
+            <div>메모</div>
+          </div>
+          <div class="button-layoyt">
+            <PictureIcon style="cursor: pointer" />
+            <div>사진</div>
+          </div>
+        </div>
+      </div>
       <div v-if="!isAuthenticate" class="login-desciption">
         <div>로그인 후 다양한 서비스를 이용해보세요 :)</div>
         <div
@@ -76,6 +101,10 @@ import CloseIcon from "../assets/icons/CloseIcon.svg";
 import SearchIcon from "../assets/icons/SearchIocn.svg";
 import logo from "../assets/icons/logo.svg";
 import loginImage from "../assets/kakao_login_medium_wide (2).png";
+import SaveIcon from "../assets/icons/SaveIcon.svg";
+import MemoIcon from "../assets/icons/MemoIcon.svg";
+import PictureIcon from "../assets/icons/PictureIcon.svg";
+import xIcon from "../assets/icons/xIcon.svg";
 export default {
   props: {
     value: {
@@ -84,11 +113,16 @@ export default {
     },
     emits: ["updateSearch"],
   },
+
   components: {
     MenuIcon,
     CloseIcon,
     SearchIcon,
     logo,
+    PictureIcon,
+    MemoIcon,
+    SaveIcon,
+    xIcon,
   },
   name: "SearchBar",
   data() {
@@ -98,6 +132,8 @@ export default {
       isAuthenticate: false,
       searchResults: [],
       loginImage: loginImage,
+      getDetail: false,
+      place: {},
     };
   },
   methods: {
@@ -114,8 +150,6 @@ export default {
           }
         );
         const data = await response.json();
-        console.log(import.meta.env.VITE_NAVER_SEARCH_CLIENT_ID);
-        console.log(import.meta.env.VITE_NAVER_SEARCH_CLIENT_SECRET);
         console.log(keyword);
         console.log(data);
         if (data.items && data.items.length > 0) {
@@ -123,7 +157,7 @@ export default {
           this.menuOpen = true;
           console.log("searchResults는", this.searchResults);
         } else {
-          searchResults = [];
+          this.searchResults = [];
           this.menuOpen = true;
           console.log("검색 결과 없음");
         }
@@ -141,6 +175,11 @@ export default {
     },
     login() {
       this.isAuthenticate = true;
+    },
+    goDetail(placeDetail) {
+      this.getDetail = true;
+      this.place = placeDetail;
+      console.log("클릭된 아이템은", this.place);
     },
   },
 };
@@ -249,5 +288,37 @@ export default {
 .placeList {
   overflow-y: auto; /* 세로 스크롤 활성화 */
   padding-left: 20px;
+}
+.place-img {
+  width: 100%;
+  border: 1px solid black;
+  height: 250px;
+  line-height: 250px;
+  margin-top: 20px;
+}
+.place-title {
+  text-align: left;
+  font-size: 25px;
+  margin-top: 10px;
+  margin-left: 15px;
+  font-weight: 500;
+}
+.place-address {
+  text-align: left;
+  margin-left: 15px;
+}
+.noResult {
+  margin-top: 40px;
+}
+.place-buttons {
+  display: flex;
+  gap: 20px;
+  height: 100px;
+  margin-top: 20px;
+  margin-left: 15px;
+}
+.button-layout {
+  display: flex;
+  flex-direction: column;
 }
 </style>

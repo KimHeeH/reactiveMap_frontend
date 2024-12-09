@@ -23,42 +23,17 @@
         <logo class="logo" />
         <CloseIcon v-if="menuOpen" class="closeIcon" @click="toggleMenu" />
       </div>
-      <div
-        class="placeList"
-        v-if="isAuthenticate && searchResults && searchResults.length > 0"
-        style="border-top: 1px solid #d4d4d4; margin-top: 10px"
-      >
-        <div style="text-align: left; margin-top: 10px">
-          검색 결과 ({{ searchResults.length }})
-        </div>
-        <div
-          class="place"
-          v-for="(result, index) in searchResults"
-          :key="index"
-        >
-          <h3>{{ result.title }}</h3>
-          <div style="font-size: 15px; margin-top: 10px">
-            {{ result.address }}
+      <div v-if="user">
+        <div class="successLoginContainer">
+          <div class="myProfile">
+            <MyIcon />
+            <div class="userName">{{ user.username }}님</div>
           </div>
-          <div style="font-size: 15px">{{ result.roadAddress }}</div>
-
-          <p style="font-size: 13px">카테고리: {{ result.category }}</p>
-          <p v-if="result.description">설명: {{ result.description }}</p>
-          <p v-if="result.telephone">전화번호: {{ result.telephone }}</p>
-          <a
-            style="font-size: 13px; margin-top: 10px"
-            :href="result.link"
-            target="_blank"
-            >상세보기</a
-          >
+          <a @click="logout">로그아웃</a>
         </div>
       </div>
-      <div v-if="!searchResults && searchResults.length <= 0">
-        <p>검색 결과가 없습니다.</p>
-      </div>
-
-      <div v-if="!isAuthenticate" class="login-desciption">
-        <div>로그인 후 다양한 서비스를 이용해보세요 :)</div>
+      <div v-else>
+        <div class="login">로그인 후 다양한 서비스를 이용해보세요 :)</div>
         <div
           class="login-container"
           style="display: flex; justify-content: center"
@@ -70,6 +45,10 @@
           />
         </div>
       </div>
+      <SearchResults
+        :searchResults="searchResults"
+        :is-authenticate="isAuthenticate"
+      />
     </div>
   </div>
 </template>
@@ -81,7 +60,12 @@ import SearchIcon from "../assets/icons/SearchIocn.svg";
 import logo from "../assets/icons/logo.svg";
 import loginImage from "../assets/kakao_login_medium_wide (2).png";
 import { useRouter } from "vue-router"; // Vue Router 가져오기
-
+import { onMounted, ref } from "vue";
+import axios from "axios";
+import Cookies from "js-cookie";
+import { fetchSearchResults } from "../api/mainService";
+import SearchResults from "./SearchResults.vue";
+import MyIcon from "../assets/icons/MyIcon.svg";
 export default {
   props: {
     value: {
@@ -95,6 +79,8 @@ export default {
     CloseIcon,
     SearchIcon,
     logo,
+    SearchResults,
+    MyIcon,
   },
   name: "SearchBar",
   data() {
@@ -104,38 +90,42 @@ export default {
       isAuthenticate: false,
       searchResults: [],
       loginImage: loginImage,
+      user: null, // user 정보가 저장되는 부분
     };
   },
   setup() {
     const router = useRouter();
-
-    // 로그인 페이지로 이동
+    // 로그인 시 카카오 callback uri로 이동
     const goToLoginPage = () => {
-      // this.isAuthenticate = true;
-
-      router.push("/login"); // "/login" 경로로 이동
+      window.location.href = "http://localhost:3000/auth/callback";
+    };
+    // 로그아웃 시 서버의 logout 경로로 이동
+    const logout = () => {
+      window.location.href = "http://localhost:3000/auth/logout";
     };
 
     return {
       goToLoginPage,
+      logout,
     };
   },
   methods: {
     async search(keyword) {
       try {
-        const response = await fetch(
-          `/api/v1/search/local.json?query=${keyword}&display=5&start=1&sort=sim`,
-          {
-            headers: {
-              "X-Naver-Client-Id": import.meta.env.VITE_NAVER_SEARCH_CLIENT_ID,
-              "X-Naver-Client-Secret": import.meta.env
-                .VITE_NAVER_SEARCH_CLIENT_SECRET,
-            },
-          }
-        );
-        const data = await response.json();
-        console.log(import.meta.env.VITE_NAVER_SEARCH_CLIENT_ID);
-        console.log(import.meta.env.VITE_NAVER_SEARCH_CLIENT_SECRET);
+        // const response = await fetch(
+        //   `/api/v1/search/local.json?query=${keyword}&display=5&start=1&sort=sim`,
+        //   {
+        //     headers: {
+        //       "X-Naver-Client-Id": import.meta.env.VITE_NAVER_SEARCH_CLIENT_ID,
+        //       "X-Naver-Client-Secret": import.meta.env
+        //         .VITE_NAVER_SEARCH_CLIENT_SECRET,
+        //     },
+        //   }
+        // );
+        const data = await fetchSearchResults(keyword);
+        // const data = await response.json();
+        // console.log(import.meta.env.VITE_NAVER_SEARCH_CLIENT_ID);
+        // console.log(import.meta.env.VITE_NAVER_SEARCH_CLIENT_SECRET);
         console.log(keyword);
         console.log(data);
         if (data.items && data.items.length > 0) {
@@ -159,6 +149,34 @@ export default {
       this.menuOpen = !this.menuOpen; // 메뉴 열림/닫힘 토글
       console.log("Menu state:", this.menuOpen);
     },
+
+    // user 데이터 가져오기
+    async userInfo() {
+      try {
+        // 클라이언트에 있는 LoggedIn 쿠키를 가져옴
+        const isLoggedIn = Cookies.get("isLoggedIn");
+        if (isLoggedIn) {
+          console.log("로그인 성공!");
+          const response = await axios.get(
+            "http://localhost:3000/auth/user-info",
+            {
+              withCredentials: true,
+            }
+          );
+          this.user = response.data;
+          this.isAuthenticate = true; // 로그인 성공 시 true로 설정
+          console.log(this.user);
+        } else {
+          console.log("로그인 x");
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+  },
+  mounted() {
+    // 클라이언트 실행 시 userInfo가 자동으로 실행됨
+    this.userInfo();
   },
 };
 </script>
@@ -266,5 +284,36 @@ export default {
 .placeList {
   overflow-y: auto; /* 세로 스크롤 활성화 */
   padding-left: 20px;
+}
+.successLoginContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between; /* 두 요소를 양 끝으로 배치 */
+  height: 100px;
+  padding: 20px;
+  width: 100%;
+  align-items: center;
+}
+.successLoginContainer div {
+  cursor: pointer;
+  align-items: center;
+}
+.successLoginContainer a {
+  margin-right: 20px;
+  cursor: pointer;
+  align-items: center;
+}
+.myProfile {
+  display: flex;
+  gap: 20px;
+}
+.myProfile div {
+  font-size: 24px;
+}
+.login {
+  font-size: 20px;
+  text-align: center;
+  margin-top: 50px;
+  margin-bottom: 0px;
 }
 </style>

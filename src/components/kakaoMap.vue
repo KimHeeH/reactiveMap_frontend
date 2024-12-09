@@ -60,20 +60,6 @@ export default {
       const coords = `${latlng.x},${latlng.y}`;
       try {
         const data = await fetchReverseGeocode(coords);
-        // try {
-        //   const response = await fetch(
-        //     `/api/naver/map-reversegeocode/v2/gc?coords=${coords}&orders=roadaddr,addr&output=json`,
-        //     {
-        //       headers: {
-        //         "X-NCP-APIGW-API-KEY-ID": `${
-        //           import.meta.env.VITE_NAVER_CLIENT_ID
-        //         }`,
-        //         "X-NCP-APIGW-API-KEY": `${
-        //           import.meta.env.VITE_NAVER_CLIENT_SECRET
-        //         }`,
-        //       },
-        //     }
-        //   );
 
         console.log("data는", data);
         if (data.results && data.results.length > 0) {

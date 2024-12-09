@@ -112,20 +112,8 @@ export default {
   methods: {
     async search(keyword) {
       try {
-        // const response = await fetch(
-        //   `/api/v1/search/local.json?query=${keyword}&display=5&start=1&sort=sim`,
-        //   {
-        //     headers: {
-        //       "X-Naver-Client-Id": import.meta.env.VITE_NAVER_SEARCH_CLIENT_ID,
-        //       "X-Naver-Client-Secret": import.meta.env
-        //         .VITE_NAVER_SEARCH_CLIENT_SECRET,
-        //     },
-        //   }
-        // );
         const data = await fetchSearchResults(keyword);
-        // const data = await response.json();
-        // console.log(import.meta.env.VITE_NAVER_SEARCH_CLIENT_ID);
-        // console.log(import.meta.env.VITE_NAVER_SEARCH_CLIENT_SECRET);
+
         console.log(keyword);
         console.log(data);
         if (data.items && data.items.length > 0) {

@@ -16,16 +16,20 @@
       @click="goDetailPlace(result)"
     >
       <h3>{{ result.title }}</h3>
-      <div style="font-size: 15px; margin-top: 10px">
+      <div style="font-size: 14px; margin-top: 10px">
         {{ result.address }}
       </div>
-      <div style="font-size: 15px">{{ result.roadAddress }}</div>
+      <div style="font-size: 14px; margin-top: 10px">
+        {{ result.roadAddress }}
+      </div>
 
-      <p style="font-size: 13px">카테고리: {{ result.category }}</p>
-      <p v-if="result.description">설명: {{ result.description }}</p>
-      <p v-if="result.telephone">전화번호: {{ result.telephone }}</p>
+      <p style="font-size: 13px; margin-top: 10px">
+        {{ result.category }}
+      </p>
+      <!-- <p v-if="result.description">설명: {{ result.description }}</p>
+      <p v-if="result.telephone">전화번호: {{ result.telephone }}</p> -->
       <a
-        style="font-size: 13px; margin-top: 10px"
+        style="font-size: 13px; margin-top: 20px; color: #fa590f"
         :href="result.link"
         target="_blank"
         >상세보기</a
@@ -37,19 +41,14 @@
       검색 결과가 없습니다.
     </div>
   </div> -->
+
   <div v-if="isDetail">
-    <div v-for="(result, index) in placeDetail" :key="index">
-      <h3>{{ result.title }}</h3>
-      <div style="font-size: 15px; margin-top: 10px">
-        {{ result.address }}
-      </div>
-      <div style="font-size: 15px">{{ result.roadAddress }}</div>
-    </div>
+    <PlaceDetail :detail="placeDetail" />
   </div>
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
-
+import PlaceDetail from "./PlaceDetail.vue";
 interface SearchResult {
   title: string;
   address: string;
@@ -61,6 +60,9 @@ interface SearchResult {
 }
 
 export default defineComponent({
+  components: {
+    PlaceDetail,
+  },
   data() {
     return {
       isDetail: false,

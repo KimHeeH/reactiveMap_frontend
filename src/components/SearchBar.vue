@@ -58,7 +58,7 @@ import MenuIcon from "../assets/icons/MenuIcon.svg";
 import CloseIcon from "../assets/icons/CloseIcon.svg";
 import SearchIcon from "../assets/icons/SearchIocn.svg";
 import logo from "../assets/icons/logo.svg";
-import loginImage from "../assets/kakao_login_medium_wide (2).png";
+import loginImage from "../assets/kakao_login_medium_wide.png";
 import { useRouter } from "vue-router"; // Vue Router 가져오기
 import { onMounted, ref } from "vue";
 import axios from "axios";
@@ -259,7 +259,9 @@ export default {
 .login-container {
   display: flex;
   gap: 10px;
-  margin-top: 15px;
+  margin-top: 20px;
+  padding-left: 50px;
+  padding-right: 50px;
 }
 .login-container img {
   z-index: 104;

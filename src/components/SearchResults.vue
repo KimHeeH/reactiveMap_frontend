@@ -43,7 +43,11 @@
   </div> -->
 
   <div v-if="isDetail">
-    <PlaceDetail :detail="placeDetail" />
+    <PlaceDetail
+      :detail="
+        placeDetail.map(({ title, roadAddress }) => ({ title, roadAddress }))
+      "
+    />
   </div>
 </template>
 <script lang="ts">

@@ -3,6 +3,7 @@
     <div id="map" style="width: 100%; height: 100%"></div>
     <div v-if="placeName" class="place-name">
       <div>{{ placeName }}</div>
+      <div>클릭된 좌표는 ({{ coords }})</div>
     </div>
   </div>
 </template>
@@ -16,6 +17,7 @@ export default {
   data() {
     return {
       placeName: null as string | null,
+      coords: null as string | null,
     };
   },
   mounted() {
@@ -58,6 +60,8 @@ export default {
   methods: {
     async getPlaceName(latlng: any) {
       const coords = `${latlng.x},${latlng.y}`;
+      this.coords = coords;
+      console.log("클릭된 좌표는", coords);
       try {
         const data = await fetchReverseGeocode(coords);
 
@@ -121,5 +125,7 @@ export default {
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
 }
 </style>

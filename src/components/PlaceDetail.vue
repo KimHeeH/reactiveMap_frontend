@@ -1,39 +1,45 @@
 <template>
-  <div v-for="(place, index) in detail" :key="index">
-    <img :src="image" alt="Place Image" />
-    <div class="title">{{ place.title }}</div>
-    <div style="font-size: 15px; margin-top: 10px; margin-left: 5px">
-      {{ place.roadAddress }}
+  <div class="contentWrapper">
+    <div v-for="(place, index) in detail" :key="index">
+      <img :src="image" alt="Place Image" style="margin-top: 10px" />
+      <div class="title">{{ place.title }}</div>
+      <div style="font-size: 15px; margin-top: 10px; margin-left: 5px">
+        {{ place.roadAddress }}
+      </div>
+    </div>
+    <div class="contentContainer">
+      <div class="iconList">
+        <div class="icon">
+          <div @click="clickSaveIcon"><SaveIcon ref="saveIcon" /></div>
+          <div class="icon-font">저장</div>
+        </div>
+        <div class="icon">
+          <div @click="clickMemoIcon"><MemoIcon ref="memoIcon" /></div>
+          <div class="icon-font">메모</div>
+        </div>
+        <div class="icon">
+          <div @click="clickPictureIcon"><PictureIcon ref="pictureIcon" /></div>
+          <div class="icon-font">사진</div>
+        </div>
+      </div>
+      <div class="MyMemoContainer" ref="myMemo"><MyMemo /></div>
+      <div class="MyPictureContainer" ref="myPicture"><MyPicture /></div>
     </div>
   </div>
-  <div class="iconList">
-    <div class="icon">
-      <div><SaveIcon /></div>
-      <div class="icon-font">저장</div>
-    </div>
-    <div class="icon">
-      <div><MemoIcon /></div>
-      <div class="icon-font">메모</div>
-    </div>
-    <div class="icon">
-      <div><PictureIcon /></div>
-      <div class="icon-font">사진</div>
-    </div>
-  </div>
-  <div class="MyMemoContainer"><MyMemo /></div>
 </template>
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
 import image from "../assets/image 10.png";
-import SaveIcon from "../assets/icons/SaveIcon (2).svg";
-import MemoIcon from "../assets/icons/MemoIcon (2).svg";
-import PictureIcon from "../assets/icons/PictureIcon (2).svg";
+import SaveIcon from "../assets/icons/components/SaveIcon.vue";
+import MemoIcon from "../assets/icons/components/MemoIcon.vue";
+import PictureIcon from "../assets/icons/components/PictureIcon.vue";
 import MyMemo from "./MyMemo.vue";
-
+import MyPicture from "./MyPicture.vue";
 interface Place {
   title: string;
   roadAddress: string;
 }
+
 export default defineComponent({
   props: {
     detail: {
@@ -53,6 +59,29 @@ export default defineComponent({
     SaveIcon, // 컴포넌트 등록
     PictureIcon,
     MyMemo,
+    MyPicture,
+  },
+  data() {},
+  methods: {
+    clickSaveIcon() {
+      alert("장소가 저장되었습니다.");
+      console.log("saveIcon Clicked");
+      (this.$refs.saveIcon as any).toggleActive();
+    },
+    clickMemoIcon() {
+      (this.$refs.memoIcon as any).toggleActive();
+      const myMemoElement = this.$refs.myMemo as HTMLElement;
+      if (myMemoElement) {
+        myMemoElement.scrollIntoView({ behavior: "smooth" });
+      }
+    },
+    clickPictureIcon() {
+      const myPictureElement = this.$refs.myPicture as HTMLElement;
+      if (myPictureElement) {
+        myPictureElement.scrollIntoView({ behavior: "smooth" });
+      }
+      (this.$refs.pictureIcon as any).toggleActive();
+    },
   },
   // data() {
   //   return { image };
@@ -60,6 +89,9 @@ export default defineComponent({
 });
 </script>
 <style>
+.contentWrapper {
+  height: 100vh; /* 화면 전체 높이 */
+}
 img {
   width: 99%;
 }
@@ -82,6 +114,12 @@ img {
   margin-left: 5px;
 }
 .MyMemoContainer {
-  margin-top: 20px;
+  margin-top: 50px;
+  height: 270px;
+}
+.contentContainer {
+  /* max-height: calc(100vh - 50px); 적절한 높이 계산 */
+
+  overflow-y: auto; /* 세로 스크롤 활성화 */
 }
 </style>

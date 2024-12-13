@@ -3,7 +3,7 @@
     <div id="map" style="width: 100%; height: 100%"></div>
     <div v-if="placeName" class="place-name">
       <div>{{ placeName }}</div>
-      <div>클릭된 좌표는 ({{ coords }})</div>
+      <!-- <div>클릭된 좌표는 ({{ coords }})</div> -->
     </div>
   </div>
 </template>

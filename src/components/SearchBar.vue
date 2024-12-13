@@ -23,26 +23,28 @@
         <logo class="logo" />
         <CloseIcon v-if="menuOpen" class="closeIcon" @click="toggleMenu" />
       </div>
-      <div v-if="user">
-        <div class="successLoginContainer">
-          <div class="myProfile">
-            <MyIcon />
-            <div class="userName">{{ user.username }}님</div>
+      <div v-if="!isSearch">
+        <div v-if="user">
+          <div class="successLoginContainer">
+            <div class="myProfile">
+              <MyIcon />
+              <div class="userName">{{ user.username }}님</div>
+            </div>
+            <a @click="logout">로그아웃</a>
           </div>
-          <a @click="logout">로그아웃</a>
         </div>
-      </div>
-      <div v-else>
-        <div class="login">로그인 후 다양한 서비스를 이용해보세요 :)</div>
-        <div
-          class="login-container"
-          style="display: flex; justify-content: center"
-        >
-          <img
-            :src="loginImage"
-            @click="goToLoginPage"
-            style="cursor: pointer"
-          />
+        <div v-else>
+          <div class="login">로그인 후 다양한 서비스를 이용해보세요 :)</div>
+          <div
+            class="login-container"
+            style="display: flex; justify-content: center"
+          >
+            <img
+              :src="loginImage"
+              @click="goToLoginPage"
+              style="cursor: pointer"
+            />
+          </div>
         </div>
       </div>
       <SearchResults
@@ -91,6 +93,7 @@ export default {
       searchResults: [],
       loginImage: loginImage,
       user: null, // user 정보가 저장되는 부분
+      isSearch: false,
     };
   },
   setup() {
@@ -112,6 +115,7 @@ export default {
   methods: {
     async search(keyword) {
       try {
+        this.isSearch = true;
         // const response = await fetch(
         //   `/api/v1/search/local.json?query=${keyword}&display=5&start=1&sort=sim`,
         //   {
@@ -231,6 +235,7 @@ export default {
   width: 440px;
   padding-top: 20px;
   padding-bottom: 20px;
+  overflow-y: auto; /* 세로 스크롤 활성화 */
 
   background-color: white;
   border-radius: 5px;

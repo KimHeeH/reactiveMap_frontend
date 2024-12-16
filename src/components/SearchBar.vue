@@ -30,7 +30,29 @@
               <MyIcon />
               <div class="userName">{{ user.username }}님</div>
             </div>
-            <a @click="logout">로그아웃</a>
+            <a
+              @click="logout"
+              style="border-bottom: 1px solid black; font-size: 14px"
+              >로그아웃</a
+            >
+          </div>
+          <div class="menuIconList">
+            <div class="iconContainer">
+              <EditIcon />
+              <div>나의 메모 기록</div>
+            </div>
+            <div class="iconContainer">
+              <ChartLineIcon />
+              <div>내 타임라인</div>
+            </div>
+            <div class="iconContainer">
+              <AlaramIcon />
+              <div>알림 설정 내역</div>
+            </div>
+            <div class="iconContainer">
+              <BookMarkIcon />
+              <div>저장됨</div>
+            </div>
           </div>
         </div>
         <div v-else>
@@ -68,6 +90,10 @@ import Cookies from "js-cookie";
 import { fetchSearchResults } from "../api/mainService";
 import SearchResults from "./SearchResults.vue";
 import MyIcon from "../assets/icons/MyIcon.svg";
+import AlaramIcon from "../assets/icons/AlaramIcon.svg";
+import BookMarkIcon from "../assets/icons/BookMarkIcon.svg";
+import ChartLineIcon from "../assets/icons/ChartLineIcon.svg";
+import EditIcon from "../assets/icons/EditIcon.svg";
 export default {
   props: {
     value: {
@@ -83,6 +109,10 @@ export default {
     logo,
     SearchResults,
     MyIcon,
+    EditIcon,
+    AlaramIcon,
+    ChartLineIcon,
+    BookMarkIcon,
   },
   name: "SearchBar",
   data() {
@@ -256,6 +286,7 @@ export default {
 .logo-container {
   display: flex;
   width: 400px;
+  margin-left: 10px;
 }
 .logo {
   width: 170px;
@@ -322,5 +353,26 @@ export default {
   text-align: center;
   margin-top: 50px;
   margin-bottom: 0px;
+}
+.menuIconList {
+  margin-left: 20px;
+}
+.svg-container {
+  width: 100%; /* 또는 원하는 크기 */
+  height: auto;
+  overflow: visible; /* 숨겨지지 않도록 설정 */
+}
+.iconContainer {
+  display: flex;
+  gap: 20px;
+  height: 50px;
+  padding: 10px;
+  cursor: pointer;
+}
+.iconContainer div {
+  font-size: 22px;
+  height: 50px;
+  line-height: 25px;
+  color: #2d2d2d;
 }
 </style>

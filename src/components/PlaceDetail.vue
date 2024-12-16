@@ -33,8 +33,8 @@ import image from "../assets/image 10.png";
 import SaveIcon from "../assets/icons/components/SaveIcon.vue";
 import MemoIcon from "../assets/icons/components/MemoIcon.vue";
 import PictureIcon from "../assets/icons/components/PictureIcon.vue";
-import MyMemo from "./MyMemo.vue";
-import MyPicture from "./MyPicture.vue";
+import MyMemo from "./Memo/MyMemo.vue";
+import MyPicture from "./Picture/MyPicture.vue";
 interface Place {
   title: string;
   roadAddress: string;
@@ -114,7 +114,7 @@ img {
   margin-left: 5px;
 }
 .MyMemoContainer {
-  margin-top: 50px;
+  margin-top: 30px;
   height: 270px;
 }
 .contentContainer {

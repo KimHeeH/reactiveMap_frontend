@@ -13,12 +13,24 @@ import { fetchReverseGeocode } from "../api/mainService";
 
 export default {
   name: "kakaoMap",
-
+  props: {
+    searchQuery: {
+      type: String,
+      required: true,
+    },
+  },
   data() {
     return {
       placeName: null as string | null,
       coords: null as string | null,
+      newSearchQuery: null as string | null,
     };
+  },
+  watch: {
+    searchQuery(newQuery) {
+      console.log("새로운 검색어", newQuery);
+      this.newSearchQuery = newQuery;
+    },
   },
   mounted() {
     console.log("KakaoMap 컴포넌트가 렌더링되었습니다!");
@@ -45,7 +57,8 @@ export default {
       map.addListener("click", (event: any) => {
         const latlng = event.coord;
         this.getPlaceName(latlng);
-
+        if (this.newSearchQuery) {
+        }
         if (!marker) {
           marker = new (window as any).naver.maps.Marker({
             position: latlng,

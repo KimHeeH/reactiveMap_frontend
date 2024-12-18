@@ -9,7 +9,6 @@
     <input
       type="text"
       :value="value"
-      @input="this.$emit('updateSearch', $event.target.value)"
       placeholder="가고싶은 장소를 검색해보세요"
       @keyup.enter="search(value)"
     />
@@ -72,13 +71,14 @@
       <SearchResults
         :searchResults="searchResults"
         :is-authenticate="isAuthenticate"
+        @openMenuBar="openMenuBar"
       />
     </div>
   </div>
 </template>
 
 <script>
-import MenuIcon from "../assets/icons/MenuIcon.svg";
+import MenuIcon from "../assets/icons/MenuIcon.vue";
 import CloseIcon from "../assets/icons/CloseIcon.svg";
 import SearchIcon from "../assets/icons/SearchIocn.svg";
 import logo from "../assets/icons/logo.svg";
@@ -165,6 +165,7 @@ export default {
         if (data.items && data.items.length > 0) {
           this.searchResults = data.items;
           this.menuOpen = true;
+          this.$emit("updateSearch", keyword);
           console.log("searchResults는", this.searchResults);
         } else {
           searchResults = [];
@@ -206,6 +207,11 @@ export default {
       } catch (error) {
         console.log(error);
       }
+    },
+    openMenuBar() {
+      this.isSearch = false;
+      this.searchResults = [];
+      console.log("Menu 클릭시 ", this.isSearch);
     },
   },
   mounted() {

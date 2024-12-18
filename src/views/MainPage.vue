@@ -1,7 +1,11 @@
 <template>
   <div class="main-page">
     <SearchBar :value="searchQuery" @updateSearch="updateSearchQuery" />
-    <kakaoMap ref="kakaoMap" @updatePlaceName="updatePlaceName" />
+    <kakaoMap
+      ref="kakaoMap"
+      @updatePlaceName="updatePlaceName"
+      :searchQuery="searchQuery"
+    />
   </div>
 </template>
 
@@ -24,7 +28,7 @@ export default defineComponent({
   methods: {
     updateSearchQuery(newSearchQuery: string) {
       // 검색창에서 입력된 검색어를 관리
-      this.searchQuery = newSearchQuery;
+      this.searchQuery = newSearchQuery || "";
     },
     updatePlaceName(newPlaceName: string | null) {
       // 지도에서 선택된 장소명을 검색창으로 동기화

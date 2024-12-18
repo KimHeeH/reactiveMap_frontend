@@ -20,7 +20,7 @@ export default {
   width: 95%;
   height: 200px;
   margin: 10px;
-  border: 1px solid #ebebeb;
+  border: 1px solid #d8d8d8;
   display: flex;
   flex-direction: column;
   justify-content: center;

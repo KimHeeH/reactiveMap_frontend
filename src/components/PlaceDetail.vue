@@ -122,4 +122,7 @@ img {
 
   overflow-y: auto; /* 세로 스크롤 활성화 */
 }
+.MyPictureContainer {
+  height: 300px;
+}
 </style>

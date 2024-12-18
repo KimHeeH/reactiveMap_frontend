@@ -6,9 +6,14 @@
     "
     style="border-top: 1px solid #d4d4d4; margin-top: 10px"
   >
-    <div style="text-align: left; margin-top: 20px">
-      검색 결과 ({{ searchResults.length }})
+    <div class="topBar">
+      <div class="menuIcon" @click="goMenu">
+        <MenuIcon />
+        <div>메뉴</div>
+      </div>
+      <div>검색 결과 ({{ searchResults.length }})</div>
     </div>
+
     <div
       class="place"
       v-for="(result, index) in searchResults"
@@ -53,6 +58,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import PlaceDetail from "./PlaceDetail.vue";
+import MenuIcon from "../assets/icons/MenuIcon.vue";
 interface SearchResult {
   title: string;
   address: string;
@@ -66,6 +72,7 @@ interface SearchResult {
 export default defineComponent({
   components: {
     PlaceDetail,
+    MenuIcon,
   },
   data() {
     return {
@@ -90,6 +97,9 @@ export default defineComponent({
       this.placeDetail = [place]; // 선택한 장소의 세부 정보를 저장
       console.log(this.isDetail);
     },
+    goMenu() {
+      this.$emit("openMenuBar");
+    },
   },
 });
 </script>
@@ -103,6 +113,13 @@ export default defineComponent({
   border-radius: 10px;
   cursor: pointer;
 }
+.topBar {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  padding-right: 25px;
+  padding-left: 5px;
+}
 .placeList {
   overflow-y: auto; /* 세로 스크롤 활성화 */
   padding-left: 20px;
@@ -110,5 +127,13 @@ export default defineComponent({
 .noResultMessage {
   font-size: 18px;
   margin-left: 20px;
+}
+.menuIcon {
+  display: flex;
+  height: 20px;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
 }
 </style>

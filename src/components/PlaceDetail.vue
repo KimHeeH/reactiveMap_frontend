@@ -2,7 +2,7 @@
   <div class="contentWrapper">
     <div v-for="(place, index) in detail" :key="index">
       <img :src="image" alt="Place Image" style="margin-top: 10px" />
-      <div class="title">{{ place.title }}</div>
+      <div class="title">{{ cleanTitle(place.title) }}</div>
       <div style="font-size: 15px; margin-top: 10px; margin-left: 5px">
         {{ place.roadAddress }}
       </div>
@@ -82,6 +82,9 @@ export default defineComponent({
       }
       (this.$refs.pictureIcon as any).toggleActive();
     },
+    cleanTitle(title: string): string {
+      return title.replace(/<\/?[^>]+(>|$)/g, "");
+    },
   },
   // data() {
   //   return { image };
@@ -123,6 +126,6 @@ img {
   overflow-y: auto; /* 세로 스크롤 활성화 */
 }
 .MyPictureContainer {
-  height: 300px;
+  height: auto;
 }
 </style>

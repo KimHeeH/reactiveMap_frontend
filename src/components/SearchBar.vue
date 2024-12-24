@@ -8,13 +8,14 @@
     <!-- 검색 입력 -->
     <input
       type="text"
-      :value="value"
+      :value="modelValue"
       placeholder="가고싶은 장소를 검색해보세요"
-      @keyup.enter="search(value)"
+      @keyup.enter="search(modelValue)"
+      @input="updateValue($event)"
     />
 
     <!-- 검색 버튼 -->
-    <SearchIcon @click="search(value)" class="searchIcon" />
+    <SearchIcon @click="search(modelValue)" class="searchIcon" />
 
     <!-- 메뉴 -->
     <div class="menu" v-if="menuOpen">
@@ -96,11 +97,14 @@ import ChartLineIcon from "../assets/icons/ChartLineIcon.svg";
 import EditIcon from "../assets/icons/EditIcon.svg";
 export default {
   props: {
-    value: {
+    modelValue: {
       type: String,
       required: true,
     },
-    emits: ["updateSearch"],
+    placeAddress: {
+      type: String,
+      required: false,
+    },
   },
   components: {
     MenuIcon,
@@ -126,6 +130,14 @@ export default {
       isSearch: false,
     };
   },
+  watch: {
+    // placeAddress가 변경되면 자동으로 search 함수 호출
+    placeAddress(newAddress) {
+      if (newAddress) {
+        this.search(newAddress); // 새 address로 검색 수행
+      }
+    },
+  },
   setup() {
     const router = useRouter();
     // 로그인 시 카카오 callback uri로 이동
@@ -146,21 +158,7 @@ export default {
     async search(keyword) {
       try {
         this.isSearch = true;
-        // const response = await fetch(
-        //   `/api/v1/search/local.json?query=${keyword}&display=5&start=1&sort=sim`,
-        //   {
-        //     headers: {
-        //       "X-Naver-Client-Id": import.meta.env.VITE_NAVER_SEARCH_CLIENT_ID,
-        //       "X-Naver-Client-Secret": import.meta.env
-        //         .VITE_NAVER_SEARCH_CLIENT_SECRET,
-        //     },
-        //   }
-        // );
         const data = await fetchSearchResults(keyword);
-        // const data = await response.json();
-        // console.log(import.meta.env.VITE_NAVER_SEARCH_CLIENT_ID);
-        // console.log(import.meta.env.VITE_NAVER_SEARCH_CLIENT_SECRET);
-        console.log(keyword);
         console.log(data);
         if (data.items && data.items.length > 0) {
           this.searchResults = data.items;
@@ -168,7 +166,7 @@ export default {
           this.$emit("updateSearch", keyword);
           console.log("searchResults는", this.searchResults);
         } else {
-          searchResults = [];
+          this.searchResults = [];
           this.menuOpen = true;
           console.log("검색 결과 없음");
         }
@@ -207,6 +205,10 @@ export default {
       } catch (error) {
         console.log(error);
       }
+    },
+    updateValue(event) {
+      const inputValue = event.target.value;
+      this.$emit("update:modelValue", inputValue);
     },
     openMenuBar() {
       this.isSearch = false;
@@ -267,7 +269,7 @@ export default {
   height: 100vh;
   position: absolute;
   top: -24.5px;
-  left: -10px;
+  left: -12px;
   width: 440px;
   padding-top: 20px;
   padding-bottom: 20px;

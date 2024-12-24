@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div>나의 사진</div>
+    <div style="margin-left: 10px">나의 사진</div>
     <div
       class="pictureContainer"
       @dragover.prevent="onDragOver"
@@ -11,12 +11,18 @@
     >
       <PictureUpload />
 
-      <div v-if="files.length">
-        <div v-for="(file, index) in files" :key="index">{{ file.name }}</div>
-      </div>
       <div v-if="!files.length">클릭 혹은 파일을 이곳에 드롭하세요.</div>
     </div>
-    <input type="file" />
+    <div class="fileContainer">
+      <input type="file" />
+      <div v-if="files.length">
+        <div v-for="(file, index) in files" :key="index" class="fileFont">
+          {{ file.name }}
+        </div>
+      </div>
+    </div>
+
+    <div class="uploadBtn"><div>업로드</div></div>
   </div>
 </template>
 <script lang="ts">
@@ -86,5 +92,24 @@ export default {
 }
 input {
   margin-left: 10px;
+}
+.uploadBtn {
+  display: flex;
+  justify-content: flex-end;
+  margin-right: 20px;
+}
+.uploadBtn div {
+  width: 100px;
+  background-color: #f2f2f2;
+  text-align: center;
+  border-radius: 1px;
+  height: 30px;
+  line-height: 30px;
+}
+.fileContainer {
+  display: flex;
+}
+.fileFont {
+  font-size: 14px;
 }
 </style>

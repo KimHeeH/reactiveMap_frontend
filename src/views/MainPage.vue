@@ -1,10 +1,10 @@
 <template>
   <div class="main-page">
-    <SearchBar :value="searchQuery" @updateSearch="updateSearchQuery" />
+    <SearchBar :placeAddress="placeAddress" v-model="searchQuery" />
     <kakaoMap
       ref="kakaoMap"
-      @updatePlaceName="updatePlaceName"
       :searchQuery="searchQuery"
+      @updatePlaceName="updateAddress"
     />
   </div>
 </template>
@@ -23,16 +23,19 @@ export default defineComponent({
   data() {
     return {
       searchQuery: "", // 검색 입력 값
+      placeAddress: "",
     };
   },
-  methods: {
-    updateSearchQuery(newSearchQuery: string) {
-      // 검색창에서 입력된 검색어를 관리
-      this.searchQuery = newSearchQuery || "";
+  watch: {
+    // searchQuery가 변경될 때마다 콘솔로 출력
+    searchQuery(newQuery) {
+      console.log("Updated searchQuery:", newQuery);
     },
-    updatePlaceName(newPlaceName: string | null) {
-      // 지도에서 선택된 장소명을 검색창으로 동기화
-      this.searchQuery = newPlaceName || "";
+  },
+  methods: {
+    updateAddress(placeName: string) {
+      console.log("PlaceName은", placeName);
+      this.placeAddress = placeName;
     },
   },
 });

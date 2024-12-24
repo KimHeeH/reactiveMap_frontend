@@ -20,7 +20,7 @@
       :key="index"
       @click="goDetailPlace(result)"
     >
-      <h3>{{ result.title }}</h3>
+      <h3>{{ cleanTitle(result.title) }}</h3>
       <div style="font-size: 14px; margin-top: 10px">
         {{ result.address }}
       </div>
@@ -99,6 +99,9 @@ export default defineComponent({
     },
     goMenu() {
       this.$emit("openMenuBar");
+    },
+    cleanTitle(title: string): string {
+      return title.replace(/<\/?[^>]+(>|$)/g, "");
     },
   },
 });

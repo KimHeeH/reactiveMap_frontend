@@ -1,7 +1,12 @@
 <template>
   <div id="map-container">
     <div id="map" style="width: 100%; height: 100%"></div>
-    <div v-if="placeName" class="place-name">
+    <div
+      v-if="placeName"
+      class="place-name"
+      :class="{ animate: isAnimating }"
+      @animationend="onAnimationEnd"
+    >
       <div style="margin-top: 10px">{{ placeName }}</div>
       <div class="addIconContainer"><AddIcon @click="clickDetail" /></div>
       <!-- <div>클릭된 좌표는 ({{ coords }})</div> -->
@@ -12,6 +17,7 @@
 <script lang="ts">
 import { fetchReverseGeocode, fetchGeocode } from "../api/mainService";
 import AddIcon from "../assets/icons/AddIcon.vue";
+import { defineComponent, ref, watch } from "vue";
 interface GeocodeResponse {
   addresses?: Array<{ x: string; y: string }>;
 }
@@ -34,6 +40,7 @@ export default {
       newSearchQuery: null as string | null,
       map: null as any, // 지도 객체를 데이터로 추가
       marker: null as any, // marker 객체 추가
+      isAnimating: false,
     };
   },
   watch: {
@@ -51,6 +58,9 @@ export default {
         );
         await this.moveMapToQuery(newQuery);
       }
+    },
+    placeName() {
+      this.isAnimating = true;
     },
   },
   mounted() {
@@ -186,6 +196,9 @@ export default {
     clickDetail() {
       this.$emit("updatePlaceName", this.placeName);
     },
+    onAnimationEnd() {
+      this.isAnimating = false;
+    },
   },
 };
 </script>
@@ -219,6 +232,20 @@ export default {
   display: flex;
   flex-direction: column;
   height: 100px;
+  transition: all 0.5s ease;
+}
+.place-name.animate {
+  animation: slideUp 1s forwards;
+}
+@keyframes slideUp {
+  0% {
+    transform: translateY(100%) translateX(-50%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0) translateX(-50%);
+    opacity: 1;
+  }
 }
 .addIconContainer {
   display: flex;

@@ -2,12 +2,13 @@
   <div id="map-container">
     <div id="map" style="width: 100%; height: 100%"></div>
     <div
-      v-if="placeName"
+      v-if="placeAddress"
       class="place-name"
       :class="{ animate: isAnimating }"
       @animationend="onAnimationEnd"
     >
-      <div style="margin-top: 10px">{{ placeName }}</div>
+      <div style="font-size: 23px">{{ cleanTitle(placeName || "") }}</div>
+      <div style="margin-top: 10px">{{ placeAddress }}</div>
       <div class="addIconContainer"><AddIcon @click="clickDetail" /></div>
       <!-- <div>클릭된 좌표는 ({{ coords }})</div> -->
     </div>
@@ -16,8 +17,9 @@
 
 <script lang="ts">
 import { fetchReverseGeocode, fetchGeocode } from "../api/mainService";
-import AddIcon from "../assets/icons/AddIcon.vue";
+import AddIcon from "../assets/icons/components/AddIcon.vue";
 import { defineComponent, ref, watch } from "vue";
+import { fetchSearchResults } from "../api/mainService";
 interface GeocodeResponse {
   addresses?: Array<{ x: string; y: string }>;
 }
@@ -35,12 +37,13 @@ export default {
 
   data() {
     return {
-      placeName: null as string | null,
+      placeAddress: null as string | null,
       coords: null as string | null,
       newSearchQuery: null as string | null,
       map: null as any, // 지도 객체를 데이터로 추가
       marker: null as any, // marker 객체 추가
       isAnimating: false,
+      placeName: null as string | null,
     };
   },
   watch: {
@@ -59,7 +62,7 @@ export default {
         await this.moveMapToQuery(newQuery);
       }
     },
-    placeName() {
+    placeAddress() {
       this.isAnimating = true;
     },
   },
@@ -128,15 +131,15 @@ export default {
             this.getPlaceName(latlng); // 장소 이름 업데이트
           } else {
             console.error("좌표 변환 실패");
-            this.placeName = "좌표 변환 실패";
+            this.placeAddress = "좌표 변환 실패";
           }
         } else {
           console.error("검색 결과가 없습니다.");
-          this.placeName = "검색 결과가 없습니다.";
+          this.placeAddress = "검색 결과가 없습니다.";
         }
       } catch (error) {
         console.error("Geocoding 실패:", error);
-        this.placeName = "오류 발생";
+        this.placeAddress = "오류 발생";
       }
     },
     onMapReady(map: any) {
@@ -173,13 +176,16 @@ export default {
           const fullAddress = `${area1} ${area2} ${area3} ${roadName} ${buildingNumber}`;
           const newPlaceName =
             `${area1} ${area2} ${area3} ${roadName} ${buildingNumber}`.trim();
-          this.placeName = fullAddress.trim(); // 결과 업데이트
+          this.placeAddress = fullAddress.trim(); // 결과 업데이트
+          const placeNameData = await fetchSearchResults(this.placeAddress);
+          this.placeName = placeNameData.items[0].title;
+          console.log("PlaceNameData는", placeNameData);
         } else {
-          this.placeName = "주소를 가져올 수 없습니다.";
+          this.placeAddress = "주소를 가져올 수 없습니다.";
         }
       } catch (error) {
         console.error("Reverse Geocoding 실패 :", error);
-        this.placeName = "오류 발생";
+        this.placeAddress = "오류 발생";
         this.$emit("updatePlaceName", null);
       }
     },
@@ -194,10 +200,13 @@ export default {
       }
     },
     clickDetail() {
-      this.$emit("updatePlaceName", this.placeName);
+      this.$emit("updatePlaceName", this.placeAddress);
     },
     onAnimationEnd() {
       this.isAnimating = false;
+    },
+    cleanTitle(title: string): string {
+      return title.replace(/<\/?[^>]+(>|$)/g, "");
     },
   },
 };
@@ -231,8 +240,10 @@ export default {
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  height: 100px;
+  height: 130px;
+  width: 400px;
   transition: all 0.5s ease;
+  padding: 20px;
 }
 .place-name.animate {
   animation: slideUp 1s forwards;
@@ -253,6 +264,5 @@ export default {
   width: 100%;
   height: 100%;
   align-items: end;
-  margin-bottom: 10px;
 }
 </style>

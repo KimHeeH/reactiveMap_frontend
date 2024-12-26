@@ -41,11 +41,6 @@
       >
     </div>
   </div>
-  <!-- <div v-if="isAuthenticate">
-    <div class="noResultMessage" v-if="isAuthenticate">
-      검색 결과가 없습니다.
-    </div>
-  </div> -->
 
   <div v-if="isDetail">
     <PlaceDetail
@@ -58,7 +53,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import PlaceDetail from "./PlaceDetail.vue";
-import MenuIcon from "../assets/icons/MenuIcon.vue";
+import MenuIcon from "../assets/icons/components/MenuIcon.vue";
 interface SearchResult {
   title: string;
   address: string;

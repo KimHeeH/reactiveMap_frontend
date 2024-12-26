@@ -19,13 +19,13 @@
 
     <!-- 메뉴 -->
     <div class="menu" v-if="menuOpen">
-      <div class="logo-container">
+      <div v-if="!currentComponent" class="logo-container">
         <logo class="logo" />
         <CloseIcon v-if="menuOpen" class="closeIcon" @click="toggleMenu" />
       </div>
       <div v-if="!isSearch">
         <div v-if="user">
-          <div class="successLoginContainer">
+          <div class="successLoginContainer" v-if="!currentComponent">
             <div class="myProfile">
               <MyIcon />
               <div class="userName">{{ user.username }}님</div>
@@ -36,23 +36,40 @@
               >로그아웃</a
             >
           </div>
-          <div class="menuIconList">
-            <div class="iconContainer">
+          <div v-else>
+            <div class="iconsContainer">
+              <div class="arrowRightIconContainer" @click="goBack">
+                <arrowRightIcon />
+              </div>
+              <div class="closeIconContainer" @click="toggleMenu">
+                <CloseIcon />
+              </div>
+            </div>
+            <div style="border-bottom: 1px solid #d4d4d4"></div>
+          </div>
+          <div class="menuIconList" v-if="!currentComponent">
+            <div
+              class="iconContainer"
+              @click="currentComponent = 'MyMemoRecords'"
+            >
               <EditIcon />
               <div>나의 메모 기록</div>
             </div>
-            <div class="iconContainer">
+            <div class="iconContainer" @click="currentComponent = 'MyTimeLine'">
               <ChartLineIcon />
               <div>내 타임라인</div>
             </div>
-            <div class="iconContainer">
+            <div class="iconContainer" @click="currentComponent = 'MyAlaram'">
               <AlaramIcon />
               <div>알림 설정 내역</div>
             </div>
-            <div class="iconContainer">
+            <div class="iconContainer" @click="currentComponent = 'MySaved'">
               <BookMarkIcon />
               <div>저장됨</div>
             </div>
+          </div>
+          <div class="currentComponent">
+            <component :is="currentComponent" />
           </div>
         </div>
         <div v-else>
@@ -79,8 +96,8 @@
 </template>
 
 <script>
-import MenuIcon from "../assets/icons/MenuIcon.vue";
-import CloseIcon from "../assets/icons/CloseIcon.svg";
+import MenuIcon from "../assets/icons/components/MenuIcon.vue";
+import CloseIcon from "../assets/icons/components/CloseIconComponent.vue";
 import SearchIcon from "../assets/icons/SearchIocn.svg";
 import logo from "../assets/icons/logo.svg";
 import loginImage from "../assets/kakao_login_medium_wide.png";
@@ -95,6 +112,11 @@ import AlaramIcon from "../assets/icons/AlaramIcon.svg";
 import BookMarkIcon from "../assets/icons/BookMarkIcon.svg";
 import ChartLineIcon from "../assets/icons/ChartLineIcon.svg";
 import EditIcon from "../assets/icons/EditIcon.svg";
+import MyMemoRecords from "./MenuComponents/MyMemoRecords.vue";
+import MyAlaram from "./MenuComponents/MyAlaram.vue";
+import MySaved from "./MenuComponents/MySaved.vue";
+import MyTimeLine from "./MenuComponents/MyTimeLine.vue";
+import arrowRightIcon from "../assets/icons/components/ArrowRightIcon.vue";
 export default {
   props: {
     modelValue: {
@@ -117,6 +139,11 @@ export default {
     AlaramIcon,
     ChartLineIcon,
     BookMarkIcon,
+    MyMemoRecords,
+    MySaved,
+    MyTimeLine,
+    MyAlaram,
+    arrowRightIcon,
   },
   name: "SearchBar",
   data() {
@@ -128,6 +155,7 @@ export default {
       loginImage: loginImage,
       user: null, // user 정보가 저장되는 부분
       isSearch: false,
+      currentComponent: null,
     };
   },
   watch: {
@@ -181,6 +209,7 @@ export default {
       console.log("Menu button clicked");
       this.menuOpen = !this.menuOpen; // 메뉴 열림/닫힘 토글
       console.log("Menu state:", this.menuOpen);
+      this.currentComponent = null;
     },
 
     // user 데이터 가져오기
@@ -215,6 +244,9 @@ export default {
       this.searchResults = [];
       console.log("Menu 클릭시 ", this.isSearch);
     },
+    goBack() {
+      this.currentComponent = null;
+    },
   },
   mounted() {
     // 클라이언트 실행 시 userInfo가 자동으로 실행됨
@@ -245,24 +277,12 @@ export default {
   align-items: center;
 }
 
-.menuIcon {
-  cursor: pointer;
-  width: 24px;
-  height: 24px;
-}
-
 .search-bar input {
   flex: 1;
   outline: none;
   border: none;
   border-radius: 4px;
   height: 100%;
-}
-
-.searchIcon {
-  cursor: pointer;
-  width: 24px;
-  height: 24px;
 }
 
 .menu {
@@ -282,6 +302,14 @@ export default {
   z-index: 101;
   flex-direction: column;
 }
+.menuIcon,
+.searchIcon,
+.closeIcon {
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+}
+
 .closeIcon {
   width: 30;
   height: 30;
@@ -382,5 +410,37 @@ export default {
   height: 50px;
   line-height: 25px;
   color: #2d2d2d;
+}
+.iconsContainer {
+  margin: 0 20px 20px 20px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.arrowRightIconContainer,
+.closeIconContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px; /* 동일한 높이 지정 */
+  cursor: pointer;
+}
+
+.closeIconContainer svg {
+  width: 24px; /* 아이콘 크기 통일 */
+  height: 24px;
+  object-fit: contain;
+}
+.arrowRightIconContainer svg {
+  width: 40px; /* 아이콘 크기 통일 */
+  height: 40px;
+  object-fit: contain;
+  margin-top: 10px;
+}
+.currentComponent {
+  margin: 50px;
 }
 </style>

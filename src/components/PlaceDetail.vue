@@ -29,7 +29,7 @@
 </template>
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
-import image from "../assets/image 10.png";
+import image from "../assets/image10.png";
 import SaveIcon from "../assets/icons/components/SaveIcon.vue";
 import MemoIcon from "../assets/icons/components/MemoIcon.vue";
 import PictureIcon from "../assets/icons/components/PictureIcon.vue";

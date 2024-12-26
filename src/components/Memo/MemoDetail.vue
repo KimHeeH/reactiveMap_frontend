@@ -16,11 +16,11 @@ export default {
 </script>
 <style scoped>
 .memoContainer {
-  background-color: #fdfdfd;
+  background-color: #fcfcfc;
   width: 95%;
   height: 200px;
   margin: 10px;
-  border: 1px solid #d8d8d8;
+  /* border: 1px solid #d8d8d8; */
   display: flex;
   flex-direction: column;
   justify-content: center;

@@ -10,3 +10,8 @@ declare module "*.svg" {
   const content: DefineComponent<{}, {}, any>;
   export default content;
 }
+interface ImportMeta {
+  readonly env: {
+    [key: string]: string;
+  };
+}

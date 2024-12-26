@@ -11,7 +11,9 @@
     >
       <PictureUpload />
 
-      <div v-if="!files.length">클릭 혹은 파일을 이곳에 드롭하세요.</div>
+      <div v-if="!files.length" class="pictureFont">
+        클릭 혹은 파일을 이곳에 드롭하세요.
+      </div>
     </div>
     <div class="fileContainer">
       <input type="file" />
@@ -68,11 +70,11 @@ export default {
 </script>
 <style>
 .pictureContainer {
-  background-color: #fdfdfd;
+  background-color: #fcfcfc;
   width: 95%;
   height: 200px;
   margin: 10px;
-  border: 2px dashed #d8d8d8;
+  border: 2px dashed #b6b6b6;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -87,7 +89,6 @@ export default {
   color: #828282;
   /* font-weight: 600; */
 
-  font-size: 15px;
   margin-top: 15px;
 }
 input {
@@ -111,5 +112,8 @@ input {
 }
 .fileFont {
   font-size: 14px;
+}
+.pictureFont {
+  font-size: 13px;
 }
 </style>

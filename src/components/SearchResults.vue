@@ -47,11 +47,12 @@
       :detail="
         placeDetail.map(({ title, roadAddress }) => ({ title, roadAddress }))
       "
+      :userData="userData"
     />
   </div>
 </template>
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, watch, PropType } from "vue";
 import PlaceDetail from "./PlaceDetail.vue";
 import MenuIcon from "../assets/icons/components/MenuIcon.vue";
 interface SearchResult {
@@ -63,7 +64,11 @@ interface SearchResult {
   telephone?: string;
   link: string;
 }
-
+interface UserData {
+  id: string;
+  username: string;
+  kakaoId: string;
+}
 export default defineComponent({
   components: {
     PlaceDetail,
@@ -84,7 +89,16 @@ export default defineComponent({
       type: Boolean,
       required: true,
     },
+    userData: {
+      type: Object as PropType<UserData>,
+      required: true,
+    },
   },
+  mounted() {
+    console.log("부모에서 받은 userData 값", this.userData);
+    console.log(this.userData.id);
+  },
+
   methods: {
     goDetailPlace(place: SearchResult) {
       console.log(this.isDetail);

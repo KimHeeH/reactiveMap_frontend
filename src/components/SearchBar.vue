@@ -90,6 +90,7 @@
         :searchResults="searchResults"
         :is-authenticate="isAuthenticate"
         @openMenuBar="openMenuBar"
+        :userData="user"
       />
     </div>
   </div>
@@ -226,6 +227,7 @@ export default {
             }
           );
           this.user = response.data;
+
           this.isAuthenticate = true; // 로그인 성공 시 true로 설정
           console.log(this.user);
         } else {

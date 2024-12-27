@@ -20,8 +20,11 @@ import { fetchReverseGeocode, fetchGeocode } from "../api/mainService";
 import AddIcon from "../assets/icons/components/AddIcon.vue";
 import { defineComponent, ref, watch } from "vue";
 import { fetchSearchResults } from "../api/mainService";
-interface GeocodeResponse {
-  addresses?: Array<{ x: string; y: string }>;
+import { useStore } from "@/stores/useStore";
+
+interface CoordsObject {
+  x: string;
+  y: string;
 }
 export default {
   name: "kakaoMap",
@@ -44,8 +47,10 @@ export default {
       marker: null as any, // marker 객체 추가
       isAnimating: false,
       placeName: null as string | null,
+      coordsObject: { x: "", y: "" } as CoordsObject, // coordsObject 타입을 지정하고 초기값을 설정
     };
   },
+
   watch: {
     async searchQuery(newQuery) {
       console.log("새로운 검색어", newQuery);
@@ -59,7 +64,7 @@ export default {
         console.log(
           `${newQuery}를 받아서 moveMapToQuery 함수를 실행하겠습니다.`
         );
-        await this.moveMapToQuery(newQuery);
+        // await this.moveMapToQuery(newQuery);
       }
     },
     placeAddress() {
@@ -102,57 +107,69 @@ export default {
     };
   },
   methods: {
-    async moveMapToQuery(query: string) {
-      if (!this.map) {
-        console.error("지도 객체가 초기화되지 않았습니다.");
-        return; // 지도 객체가 없으면 함수 종료
-      }
+    // async moveMapToQuery(query: string) {
+    //   if (!this.map) {
+    //     console.error("지도 객체가 초기화되지 않았습니다.");
+    //     return; // 지도 객체가 없으면 함수 종료
+    //   }
 
-      try {
-        // 좌표 데이터를 받아오기
-        const data = await fetchGeocode(query);
+    //   try {
+    //     // 좌표 데이터를 받아오기
+    //     const data = await fetchGeocode(query);
 
-        if (data) {
-          const { x, y } = data; // x와 y 값을 가져옵니다.
+    //     if (data) {
+    //       const { x, y } = data; // x와 y 값을 가져옵니다.
 
-          console.log(`좌표: x = ${x}, y = ${y}`);
+    //       console.log(`좌표: x = ${x}, y = ${y}`);
 
-          // 문자열로 받은 좌표를 숫자로 변환
-          const latitude = parseFloat(y); // 위도 (y)
-          const longitude = parseFloat(x); // 경도 (x)
+    //       // 문자열로 받은 좌표를 숫자로 변환
+    //       const latitude = parseFloat(y); // 위도 (y)
+    //       const longitude = parseFloat(x); // 경도 (x)
 
-          if (!isNaN(latitude) && !isNaN(longitude)) {
-            // 네이버 지도에서 사용할 LatLng 객체 생성 (y, x 순서)
-            const latlng = new window.naver.maps.LatLng(latitude, longitude);
+    //       if (!isNaN(latitude) && !isNaN(longitude)) {
+    //         // 네이버 지도에서 사용할 LatLng 객체 생성 (y, x 순서)
+    //         const latlng = new window.naver.maps.LatLng(latitude, longitude);
 
-            // 지도 이동 및 마커 업데이트
-            this.map.setCenter(latlng); // 지도 중심 이동
-            this.updateMarker(latlng); // 마커 업데이트
-            this.getPlaceName(latlng); // 장소 이름 업데이트
-          } else {
-            console.error("좌표 변환 실패");
-            this.placeAddress = "좌표 변환 실패";
-          }
-        } else {
-          console.error("검색 결과가 없습니다.");
-          this.placeAddress = "검색 결과가 없습니다.";
-        }
-      } catch (error) {
-        console.error("Geocoding 실패:", error);
-        this.placeAddress = "오류 발생";
-      }
-    },
-    onMapReady(map: any) {
-      this.map = map;
-      console.log("지도 초기화 완료:", this.map);
-      // map 객체가 준비되었을 때만 moveMapToQuery 호출
-      if (this.map) {
-        console.log("지도 객체 준비 완료");
-      }
+    //         // 지도 이동 및 마커 업데이트
+    //         this.map.setCenter(latlng); // 지도 중심 이동
+    //         this.updateMarker(latlng); // 마커 업데이트
+    //         this.getPlaceName(latlng); // 장소 이름 업데이트
+    //       } else {
+    //         console.error("좌표 변환 실패");
+    //         this.placeAddress = "좌표 변환 실패";
+    //       }
+    //     } else {
+    //       console.error("검색 결과가 없습니다.");
+    //       this.placeAddress = "검색 결과가 없습니다.";
+    //     }
+    //   } catch (error) {
+    //     console.error("Geocoding 실패:", error);
+    //     this.placeAddress = "오류 발생";
+    //   }
+    // },
+    // onMapReady(map: any) {
+    //   this.map = map;
+    //   console.log("지도 초기화 완료:", this.map);
+    //   // map 객체가 준비되었을 때만 moveMapToQuery 호출
+    //   if (this.map) {
+    //     console.log("지도 객체 준비 완료");
+    //   }
+    // },
+    updateCoords(coords: CoordsObject) {
+      const store = useStore();
+      store.setCoords({
+        x: parseFloat(coords.x), // x를 숫자로 변환
+        y: parseFloat(coords.y), // y를 숫자로 변환
+      });
     },
     async getPlaceName(latlng: any) {
       const coords = `${latlng.x},${latlng.y}`;
       this.coords = coords;
+      this.coordsObject.x = `${latlng.x}`;
+      this.coordsObject.y = `${latlng.y}`;
+
+      // coordsObject를 store에 전달
+      this.updateCoords(this.coordsObject);
       console.log("클릭된 좌표는", coords);
       try {
         const data = await fetchReverseGeocode(coords);

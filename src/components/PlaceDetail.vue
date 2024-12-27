@@ -22,7 +22,9 @@
           <div class="icon-font">사진</div>
         </div>
       </div>
-      <div class="MyMemoContainer" ref="myMemo"><MyMemo /></div>
+      <div class="MyMemoContainer" ref="myMemo">
+        <MyMemo :userData="userData" :locationName="detail" />
+      </div>
       <div class="MyPictureContainer" ref="myPicture"><MyPicture /></div>
     </div>
   </div>
@@ -39,20 +41,29 @@ interface Place {
   title: string;
   roadAddress: string;
 }
-
+interface UserData {
+  id: string;
+  username: string;
+  kakaoId: string;
+}
 export default defineComponent({
   props: {
     detail: {
       type: Array as PropType<Place[]>, // Place[] 타입을 명시
       required: true,
     },
+    userData: {
+      type: Object as PropType<UserData>,
+      required: true,
+    },
   },
-  setup(props: { detail: Place[] }) {
+  setup(props) {
+    const { detail, userData } = props;
     // props.detail은 Place[] 타입으로 추론
     console.log(props.detail);
-    console.log(SaveIcon); // SaveIcon이 어떻게 로드되는지 확인
+    console.log(userData); // SaveIcon이 어떻게 로드되는지 확인
 
-    return { detail: props.detail, image }; // 반환값 추가
+    return { detail: props.detail, userData, image }; // 반환값 추가
   },
   components: {
     MemoIcon,
@@ -61,7 +72,7 @@ export default defineComponent({
     MyMemo,
     MyPicture,
   },
-  data() {},
+
   methods: {
     clickSaveIcon() {
       alert("장소가 저장되었습니다.");

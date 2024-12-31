@@ -73,12 +73,22 @@ export default defineComponent({
       console.log("제목:", inputTitleValue.value);
       console.log("내용:", inputContentValue.value);
       console.log(props.userData);
-      console.log(coords);
+      console.log("위치는?", coords);
+      console.log(
+        "장소 이름은",
+        props.locationName[0].title.replace(/<\/?[^>]+(>|$)/g, "")
+      );
       try {
+        console.log("등록 전 좌표 확인", store.coords);
+        await store.setCoords(store.coords);
+        console.log("등록 후 좌표 확인", store.coords);
         const response = await axios.post("http://localhost:3000/memos", {
           userId: props.userData.id,
-          placeName: props.locationName[0]?.title,
-          coords: coords,
+          placeName: props.locationName[0]?.title.replace(
+            /<\/?[^>]+(>|$)/g,
+            ""
+          ),
+          coords: store.coords,
         });
         console.log("서버응답", response.data);
         alert("메모가 성공적으로 등록되었습니다.");

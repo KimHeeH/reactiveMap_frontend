@@ -45,7 +45,12 @@
   <div v-if="isDetail">
     <PlaceDetail
       :detail="
-        placeDetail.map(({ title, roadAddress }) => ({ title, roadAddress }))
+        placeDetail.map(({ title, roadAddress, mapx, mapy }) => ({
+          title,
+          roadAddress,
+          mapx,
+          mapy,
+        }))
       "
       :userData="userData"
     />
@@ -63,6 +68,8 @@ interface SearchResult {
   description?: string;
   telephone?: string;
   link: string;
+  mapx: string;
+  mapy: string;
 }
 interface UserData {
   id: string;
@@ -105,6 +112,7 @@ export default defineComponent({
       this.isDetail = !this.isDetail;
       this.placeDetail = [place]; // 선택한 장소의 세부 정보를 저장
       console.log(this.isDetail);
+      console.log(this.searchResults);
     },
     goMenu() {
       this.$emit("openMenuBar");

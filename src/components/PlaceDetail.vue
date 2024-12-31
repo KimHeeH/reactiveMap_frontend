@@ -6,6 +6,12 @@
       <div style="font-size: 15px; margin-top: 10px; margin-left: 5px">
         {{ place.roadAddress }}
       </div>
+      <div style="font-size: 15px; margin-top: 10px; margin-left: 5px">
+        {{ place.mapx }}
+      </div>
+      <div style="font-size: 15px; margin-top: 10px; margin-left: 5px">
+        {{ place.mapy }}
+      </div>
     </div>
     <div class="contentContainer">
       <div class="iconList">
@@ -37,9 +43,12 @@ import MemoIcon from "../assets/icons/components/MemoIcon.vue";
 import PictureIcon from "../assets/icons/components/PictureIcon.vue";
 import MyMemo from "./Memo/MyMemo.vue";
 import MyPicture from "./Picture/MyPicture.vue";
+import { useStore } from "@/stores/useStore";
 interface Place {
   title: string;
   roadAddress: string;
+  mapx: string;
+  mapy: string;
 }
 interface UserData {
   id: string;
@@ -60,7 +69,6 @@ export default defineComponent({
   setup(props) {
     const { detail, userData } = props;
     // props.detail은 Place[] 타입으로 추론
-    console.log(props.detail);
     console.log(userData); // SaveIcon이 어떻게 로드되는지 확인
 
     return { detail: props.detail, userData, image }; // 반환값 추가
@@ -72,7 +80,23 @@ export default defineComponent({
     MyMemo,
     MyPicture,
   },
+  mounted() {
+    console.log(this.detail);
 
+    const store = useStore();
+    if (this.detail.length > 0) {
+      const firstPlace = this.detail[0];
+      const parseCoords = {
+        x: parseFloat(firstPlace.mapx),
+        y: parseFloat(firstPlace.mapy),
+      };
+      console.log("화면에 표시된 좌표", firstPlace.mapx, firstPlace.mapy);
+      console.log("setCoords에 저장한 좌표", parseCoords);
+      store.setCoords(parseCoords).then(() => {
+        console.log("좌표값이 갱신되었습니다.", store.coords);
+      });
+    }
+  },
   methods: {
     clickSaveIcon() {
       alert("장소가 저장되었습니다.");

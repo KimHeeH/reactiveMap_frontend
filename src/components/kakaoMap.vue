@@ -10,7 +10,7 @@
       <div style="font-size: 23px">{{ cleanTitle(placeName || "") }}</div>
       <div style="margin-top: 10px">{{ placeAddress }}</div>
       <div class="addIconContainer"><AddIcon @click="clickDetail" /></div>
-      <!-- <div>클릭된 좌표는 ({{ coords }})</div> -->
+      <div>클릭된 좌표는 ({{ coords }})</div>
     </div>
   </div>
 </template>
@@ -56,7 +56,6 @@ export default {
       console.log("새로운 검색어", newQuery);
 
       if (!this.map) {
-        console.error("지도 객체가 초기화되지 않았습니다.");
         return;
       }
       this.newSearchQuery = newQuery;
@@ -155,21 +154,12 @@ export default {
     //     console.log("지도 객체 준비 완료");
     //   }
     // },
-    updateCoords(coords: CoordsObject) {
-      const store = useStore();
-      store.setCoords({
-        x: parseFloat(coords.x), // x를 숫자로 변환
-        y: parseFloat(coords.y), // y를 숫자로 변환
-      });
-    },
+
     async getPlaceName(latlng: any) {
       const coords = `${latlng.x},${latlng.y}`;
       this.coords = coords;
       this.coordsObject.x = `${latlng.x}`;
       this.coordsObject.y = `${latlng.y}`;
-
-      // coordsObject를 store에 전달
-      this.updateCoords(this.coordsObject);
       console.log("클릭된 좌표는", coords);
       try {
         const data = await fetchReverseGeocode(coords);

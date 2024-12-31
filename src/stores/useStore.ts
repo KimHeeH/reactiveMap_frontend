@@ -5,7 +5,8 @@ export const useStore = defineStore("main", {
     coords: { x: 0, y: 0 },
   }),
   actions: {
-    setCoords(coords: { x: number; y: number }) {
+    async setCoords(coords: { x: number; y: number }) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
       this.coords = coords;
     },
   },

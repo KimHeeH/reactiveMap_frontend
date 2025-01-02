@@ -87,8 +87,8 @@ export default defineComponent({
     if (this.detail.length > 0) {
       const firstPlace = this.detail[0];
       const parseCoords = {
-        x: parseFloat(firstPlace.mapx),
-        y: parseFloat(firstPlace.mapy),
+        x: firstPlace.mapx,
+        y: firstPlace.mapy,
       };
       console.log("화면에 표시된 좌표", firstPlace.mapx, firstPlace.mapy);
       console.log("setCoords에 저장한 좌표", parseCoords);

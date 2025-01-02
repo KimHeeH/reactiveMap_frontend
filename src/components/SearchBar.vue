@@ -391,6 +391,9 @@ export default {
   text-align: center;
   margin-top: 50px;
   margin-bottom: 0px;
+  font-family: "Nanum Gothic Coding", serif;
+  font-weight: 600;
+  font-style: normal;
 }
 .menuIconList {
   margin-left: 20px;

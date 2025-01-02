@@ -73,7 +73,6 @@ export default defineComponent({
       console.log("제목:", inputTitleValue.value);
       console.log("내용:", inputContentValue.value);
       console.log(props.userData);
-      console.log("위치는?", coords);
       console.log(
         "장소 이름은",
         props.locationName[0].title.replace(/<\/?[^>]+(>|$)/g, "")
@@ -113,6 +112,7 @@ export default defineComponent({
   },
 });
 </script>
+
 <style scooped>
 .memoContainer {
   background-color: #fcfcfc;

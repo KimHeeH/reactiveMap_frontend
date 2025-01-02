@@ -16,7 +16,7 @@
     <div class="contentContainer">
       <div class="iconList">
         <div class="icon">
-          <div @click="clickSaveIcon"><SaveIcon ref="saveIcon" /></div>
+          <div @click="bookmark"><SaveIcon ref="saveIcon" /></div>
           <div class="icon-font">저장</div>
         </div>
         <div class="icon">
@@ -44,6 +44,7 @@ import PictureIcon from "../assets/icons/components/PictureIcon.vue";
 import MyMemo from "./Memo/MyMemo.vue";
 import MyPicture from "./Picture/MyPicture.vue";
 import { useStore } from "@/stores/useStore";
+import axios from "axios";
 interface Place {
   title: string;
   roadAddress: string;
@@ -70,8 +71,32 @@ export default defineComponent({
     const { detail, userData } = props;
     // props.detail은 Place[] 타입으로 추론
     console.log(userData); // SaveIcon이 어떻게 로드되는지 확인
+    const bookmark = async () => {
+      if (userData) {
+        try {
+          const response = await axios.post(
+            `http://localhost:3000/bookmark/insert`,
+            {
+              id: userData.id,
+              place: detail[0]?.title.replace(/<\/?[^>]+(>|$)/g, ""),
+              lon: detail[0]?.mapx,
+              lat: detail[0]?.mapy,
+            }
+          );
+          if (response.data.success === true) {
+            alert("즐겨찾기가 등록되었습니다.");
+          } else {
+            alert("즐겨찾기가 취소되었습니다.");
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      } else {
+        alert("유저 정보가 없습니다.");
+      }
+    };
 
-    return { detail: props.detail, userData, image }; // 반환값 추가
+    return { detail: props.detail, userData, image, bookmark }; // 반환값 추가
   },
   components: {
     MemoIcon,

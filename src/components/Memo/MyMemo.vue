@@ -27,7 +27,6 @@
 </template>
 <script lang="ts">
 import axios from "axios";
-
 import { defineComponent, ref, PropType } from "vue";
 import NoMemoIcon from "../../assets/icons/NoMemoIconComponent.vue";
 import { useStore } from "@/stores/useStore";
@@ -70,26 +69,21 @@ export default defineComponent({
     const inputContentValue = ref("");
 
     const memoRegister = async () => {
-      console.log("제목:", inputTitleValue.value);
-      console.log("내용:", inputContentValue.value);
-      console.log(props.userData);
-      console.log(
-        "장소 이름은",
-        props.locationName[0].title.replace(/<\/?[^>]+(>|$)/g, "")
-      );
+      store.setCoords(store.coords);
       try {
-        console.log("등록 전 좌표 확인", store.coords);
-        await store.setCoords(store.coords);
-        console.log("등록 후 좌표 확인", store.coords);
-        const response = await axios.post("http://localhost:3000/memos", {
-          userId: props.userData.id,
-          placeName: props.locationName[0]?.title.replace(
-            /<\/?[^>]+(>|$)/g,
-            ""
-          ),
-          coords: store.coords,
-        });
-        console.log("서버응답", response.data);
+        const response = await axios.post(
+          "http://localhost:3000/record/insert",
+          {
+            id: props.userData.id,
+            place: props.locationName[0]?.title.replace(/<\/?[^>]+(>|$)/g, ""),
+            lon: store.coords.x,
+            lat: store.coords.y,
+            title: inputTitleValue.value,
+            content: inputContentValue.value,
+          }
+        );
+        inputContentValue.value = "";
+        inputTitleValue.value = "";
         alert("메모가 성공적으로 등록되었습니다.");
       } catch (error) {
         console.error("서버 요청 실패", error);

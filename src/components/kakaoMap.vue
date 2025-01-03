@@ -56,6 +56,7 @@ export default {
       console.log("새로운 검색어", newQuery);
 
       if (!this.map) {
+        // console.error("지도 객체가 초기화되지 않았습니다.");
         return;
       }
       this.newSearchQuery = newQuery;
@@ -72,7 +73,6 @@ export default {
   },
   mounted() {
     const script = document.createElement("script");
-
     script.src = `https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${
       import.meta.env.VITE_NAVER_CLIENT_ID
     }`;
@@ -81,31 +81,48 @@ export default {
     document.head.appendChild(script);
 
     script.onload = () => {
-      const map = new (window as any).naver.maps.Map("map", {
-        center: new (window as any).naver.maps.LatLng(37.5670135, 126.978374),
-        zoom: 10,
-      });
-      console.log("지도 초기화 완료", map);
-
-      let marker: any = null;
-
-      map.addListener("click", (event: any) => {
-        const latlng = event.coord;
-        this.getPlaceName(latlng);
-        if (this.newSearchQuery) {
-        }
-        if (!marker) {
-          marker = new (window as any).naver.maps.Marker({
-            position: latlng,
-            map: map,
-          });
-        } else {
-          marker.setPosition(latlng);
-        }
-      });
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude, accuracy } = position.coords;
+            console.log("accuracy", accuracy);
+            console.log("현재 위치", latitude, longitude);
+            this.initializeMap(latitude, longitude);
+          },
+          (error) => {
+            console.error("위치 정보를 가져오는데 실패했습니다.", error);
+            this.initializeMap(37.5670135, 126.978374);
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 1000,
+            maximumAge: 0,
+          }
+        );
+      } else {
+        console.error("이 브라우저는 Geolocation을 지원하지 않습니다.");
+        this.initializeMap(37.5670135, 126.978374);
+      }
     };
   },
   methods: {
+    initializeMap(latitude: number, longitude: number) {
+      const map = new (window as any).naver.maps.Map("map", {
+        center: new (window as any).naver.maps.LatLng(latitude, longitude),
+        zoom: 14,
+      });
+      console.log("지도 초기화 완료", map);
+
+      const marker = new (window as any).naver.maps.Marker({
+        position: new (window as any).naver.maps.LatLng(latitude, longitude),
+        map: map,
+      });
+      map.addListener("click", (event: any) => {
+        const latlng = event.coord;
+        this.getPlaceName(latlng);
+        marker.setPosition(latlng);
+      });
+    },
     // async moveMapToQuery(query: string) {
     //   if (!this.map) {
     //     console.error("지도 객체가 초기화되지 않았습니다.");
@@ -154,12 +171,21 @@ export default {
     //     console.log("지도 객체 준비 완료");
     //   }
     // },
-
+    updateCoords(coords: CoordsObject) {
+      const store = useStore();
+      // store.setCoords({
+      //   x: coords.x.toString(),
+      //   y: coords.y.toString(),
+      // });
+    },
     async getPlaceName(latlng: any) {
       const coords = `${latlng.x},${latlng.y}`;
       this.coords = coords;
       this.coordsObject.x = `${latlng.x}`;
       this.coordsObject.y = `${latlng.y}`;
+
+      // coordsObject를 store에 전달
+      // this.updateCoords(this.coordsObject);
       console.log("클릭된 좌표는", coords);
       try {
         const data = await fetchReverseGeocode(coords);

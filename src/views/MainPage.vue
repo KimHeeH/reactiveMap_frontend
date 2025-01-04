@@ -42,7 +42,6 @@ export default defineComponent({
   methods: {
     updateAddress(placeName: string) {
       console.log("PlaceName은", placeName);
-      this.menuOpen = true;
       this.placeAddress = placeName;
     },
   },

@@ -11,3 +11,14 @@ export const useStore = defineStore("main", {
     },
   },
 });
+
+export const addressStore = defineStore("main", {
+  state: () => ({
+    address: "",
+  }),
+  actions: {
+    async setAddress(address: string | null) {
+      this.address = address || "";
+    },
+  },
+});

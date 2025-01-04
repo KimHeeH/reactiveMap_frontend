@@ -18,7 +18,7 @@
     <SearchIcon @click="search(modelValue)" class="searchIcon" />
 
     <!-- 메뉴 -->
-    <div class="menu" v-if="menuOpen">
+    <div class="menu" v-if="menuOpen" :key="menuOpen">
       <div v-if="!currentComponent" class="logo-container">
         <logo class="logo" />
         <CloseIcon v-if="menuOpen" class="closeIcon" @click="toggleMenu" />
@@ -91,6 +91,7 @@
         :is-authenticate="isAuthenticate"
         @openMenuBar="openMenuBar"
         :userData="user"
+        :placeAddress="placeAddress"
       />
     </div>
   </div>
@@ -157,15 +158,19 @@ export default {
       user: null, // user 정보가 저장되는 부분
       isSearch: false,
       currentComponent: null,
+      newAddress: "",
     };
   },
   watch: {
     // placeAddress가 변경되면 자동으로 search 함수 호출
     placeAddress(newAddress) {
       if (newAddress) {
+        console.log("새로운 장소는?", newAddress);
+        this.menuOpen = false;
         this.search(newAddress); // 새 address로 검색 수행
       }
     },
+    menuOpen() {},
   },
   setup() {
     const router = useRouter();
@@ -191,12 +196,17 @@ export default {
         console.log(data);
         if (data.items && data.items.length > 0) {
           this.searchResults = data.items;
-          this.menuOpen = true;
+          if (this.isAuthenticate) {
+            this.menuOpen = true;
+          } else {
+            alert("로그인을 해주세요");
+          }
           this.$emit("updateSearch", keyword);
           console.log("searchResults는", this.searchResults);
         } else {
           this.searchResults = [];
           this.menuOpen = true;
+
           console.log("검색 결과 없음");
         }
       } catch (error) {

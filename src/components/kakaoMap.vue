@@ -21,7 +21,7 @@ import AddIcon from "../assets/icons/components/AddIcon.vue";
 import { defineComponent, ref, watch } from "vue";
 import { fetchSearchResults } from "../api/mainService";
 import { useStore } from "@/stores/useStore";
-
+import { addressStore } from "@/stores/useStore";
 interface CoordsObject {
   x: string;
   y: string;
@@ -109,7 +109,7 @@ export default {
     initializeMap(latitude: number, longitude: number) {
       const map = new (window as any).naver.maps.Map("map", {
         center: new (window as any).naver.maps.LatLng(latitude, longitude),
-        zoom: 14,
+        zoom: 19,
       });
       console.log("지도 초기화 완료", map);
 
@@ -119,64 +119,23 @@ export default {
       });
       map.addListener("click", (event: any) => {
         const latlng = event.coord;
-        this.getPlaceName(latlng);
-        marker.setPosition(latlng);
+        // this.getPlaceName(latlng);
+        this.moveM(latlng, map, marker);
+        // marker.setPosition(latlng);
       });
     },
-    // async moveMapToQuery(query: string) {
-    //   if (!this.map) {
-    //     console.error("지도 객체가 초기화되지 않았습니다.");
-    //     return; // 지도 객체가 없으면 함수 종료
-    //   }
-
-    //   try {
-    //     // 좌표 데이터를 받아오기
-    //     const data = await fetchGeocode(query);
-
-    //     if (data) {
-    //       const { x, y } = data; // x와 y 값을 가져옵니다.
-
-    //       console.log(`좌표: x = ${x}, y = ${y}`);
-
-    //       // 문자열로 받은 좌표를 숫자로 변환
-    //       const latitude = parseFloat(y); // 위도 (y)
-    //       const longitude = parseFloat(x); // 경도 (x)
-
-    //       if (!isNaN(latitude) && !isNaN(longitude)) {
-    //         // 네이버 지도에서 사용할 LatLng 객체 생성 (y, x 순서)
-    //         const latlng = new window.naver.maps.LatLng(latitude, longitude);
-
-    //         // 지도 이동 및 마커 업데이트
-    //         this.map.setCenter(latlng); // 지도 중심 이동
-    //         this.updateMarker(latlng); // 마커 업데이트
-    //         this.getPlaceName(latlng); // 장소 이름 업데이트
-    //       } else {
-    //         console.error("좌표 변환 실패");
-    //         this.placeAddress = "좌표 변환 실패";
-    //       }
-    //     } else {
-    //       console.error("검색 결과가 없습니다.");
-    //       this.placeAddress = "검색 결과가 없습니다.";
-    //     }
-    //   } catch (error) {
-    //     console.error("Geocoding 실패:", error);
-    //     this.placeAddress = "오류 발생";
-    //   }
-    // },
-    // onMapReady(map: any) {
-    //   this.map = map;
-    //   console.log("지도 초기화 완료:", this.map);
-    //   // map 객체가 준비되었을 때만 moveMapToQuery 호출
-    //   if (this.map) {
-    //     console.log("지도 객체 준비 완료");
-    //   }
-    // },
-    updateCoords(coords: CoordsObject) {
-      const store = useStore();
-      // store.setCoords({
-      //   x: coords.x.toString(),
-      //   y: coords.y.toString(),
-      // });
+    async moveM(latlng: any, map: any, marker: any) {
+      const zoomLevel = map.getZoom();
+      const targetZoom = 19;
+      const transitionOptions = { duration: 700, easing: "easeOutCubic" };
+      map.panTo(latlng, transitionOptions);
+      if (zoomLevel !== targetZoom) {
+        setTimeout(() => {
+          map.setZoom(targetZoom, true); // 부드러운 줌 변경
+        }, 700);
+      }
+      marker.setPosition(latlng);
+      await this.getPlaceName(latlng);
     },
     async getPlaceName(latlng: any) {
       const coords = `${latlng.x},${latlng.y}`;
@@ -233,6 +192,9 @@ export default {
       }
     },
     clickDetail() {
+      // const store = addressStore();
+      // store.setAddress(this.placeAddress);
+      // console.log("addressStore 저장 값", store.address);
       this.$emit("updatePlaceName", this.placeAddress);
     },
     onAnimationEnd() {

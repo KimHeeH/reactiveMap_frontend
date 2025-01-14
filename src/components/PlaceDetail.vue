@@ -6,12 +6,6 @@
       <div style="font-size: 15px; margin-top: 10px; margin-left: 5px">
         {{ place.roadAddress }}
       </div>
-      <div style="font-size: 15px; margin-top: 10px; margin-left: 5px">
-        {{ place.mapx }}
-      </div>
-      <div style="font-size: 15px; margin-top: 10px; margin-left: 5px">
-        {{ place.mapy }}
-      </div>
     </div>
     <div class="contentContainer">
       <div class="iconList">

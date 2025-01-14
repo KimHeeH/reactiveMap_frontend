@@ -1,16 +1,10 @@
 <template>
   <div
     class="placeList"
-    v-if="
-      isAuthenticate && searchResults && searchResults.length > 0 && !isDetail
-    "
+    v-if="searchResults && searchResults.length > 0 && !isDetail"
     style="border-top: 1px solid #d4d4d4; margin-top: 10px"
   >
     <div class="topBar">
-      <div class="menuIcon" @click="goMenu">
-        <MenuIcon />
-        <div>메뉴</div>
-      </div>
       <div>검색 결과 ({{ searchResults.length }})</div>
     </div>
 
@@ -92,10 +86,7 @@ export default defineComponent({
       type: Array as () => SearchResult[],
       required: true,
     },
-    isAuthenticate: {
-      type: Boolean,
-      required: true,
-    },
+
     userData: {
       type: Object as PropType<UserData>,
       required: true,
@@ -114,9 +105,7 @@ export default defineComponent({
       console.log(this.isDetail);
       console.log(this.searchResults);
     },
-    goMenu() {
-      this.$emit("openMenuBar");
-    },
+
     cleanTitle(title: string): string {
       return title.replace(/<\/?[^>]+(>|$)/g, "");
     },

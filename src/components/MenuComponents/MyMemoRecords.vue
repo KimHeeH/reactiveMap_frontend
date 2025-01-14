@@ -87,7 +87,7 @@ export default defineComponent({
 }
 .addMomoContainer {
   border: 2px solid #f6f6f6;
-  width: 340px;
+  width: 320px;
   min-height: 150px;
   height: auto;
   margin-top: 40px;

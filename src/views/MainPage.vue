@@ -1,10 +1,11 @@
 <template>
   <div class="main-page">
     <SearchBar
-      :menuOpen="menuOpen"
+      :user="user"
       :placeAddress="placeAddress"
       v-model="searchQuery"
     />
+    <MenuBar @updateUserData="updateUserData" />
     <kakaoMap
       ref="kakaoMap"
       :searchQuery="searchQuery"
@@ -18,18 +19,20 @@ import { defineComponent } from "vue";
 import SearchBar from "../components/SearchBar.vue";
 import kakaoMap from "../components/kakaoMap.vue";
 import MenuIcon from "@/assets/icons/components/MenuIcon.vue";
+import MenuBar from "@/components/menuBar.vue";
 
 export default defineComponent({
   name: "MainPage",
   components: {
     SearchBar,
     kakaoMap,
+    MenuBar,
   },
   data() {
     return {
       searchQuery: "", // 검색 입력 값
       placeAddress: "",
-      menuOpen: false,
+      user: null,
     };
   },
   watch: {
@@ -43,6 +46,10 @@ export default defineComponent({
     updateAddress(placeName: string) {
       console.log("PlaceName은", placeName);
       this.placeAddress = placeName;
+    },
+    updateUserData(userData: object) {
+      this.user = userData;
+      console.log(this.user);
     },
   },
 });

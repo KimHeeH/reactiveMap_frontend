@@ -22,3 +22,13 @@ export const addressStore = defineStore("main", {
     },
   },
 });
+export const photoURLStore = defineStore("photoURL", {
+  state: () => ({
+    url: "",
+  }),
+  actions: {
+    async setUrl(newUrl: string | null) {
+      this.url = newUrl || "";
+    },
+  },
+});

@@ -1,7 +1,7 @@
 <template>
   <div class="contentWrapper">
     <div v-for="(place, index) in detail" :key="index">
-      <img :src="image" alt="Place Image" style="margin-top: 10px" />
+      <img :src="url" alt="Place Image" style="margin-top: 10px" />
       <div class="title">{{ cleanTitle(place.title) }}</div>
       <div style="font-size: 15px; margin-top: 10px; margin-left: 5px">
         {{ place.roadAddress }}
@@ -38,6 +38,8 @@ import PictureIcon from "../assets/icons/components/PictureIcon.vue";
 import MyMemo from "./Memo/MyMemo.vue";
 import MyPicture from "./Picture/MyPicture.vue";
 import { useStore } from "@/stores/useStore";
+import { photoURLStore } from "@/stores/useStore";
+
 import axios from "axios";
 interface Place {
   title: string;
@@ -63,6 +65,8 @@ export default defineComponent({
   },
   setup(props) {
     const { detail, userData } = props;
+    const store = photoURLStore();
+    const url = store.url || "";
     // props.detail은 Place[] 타입으로 추론
     console.log(userData); // SaveIcon이 어떻게 로드되는지 확인
     const bookmark = async () => {
@@ -90,7 +94,7 @@ export default defineComponent({
       }
     };
 
-    return { detail: props.detail, userData, image, bookmark }; // 반환값 추가
+    return { detail: props.detail, userData, image, bookmark, url }; // 반환값 추가
   },
   components: {
     MemoIcon,
@@ -103,6 +107,12 @@ export default defineComponent({
     console.log(this.detail);
 
     const store = useStore();
+    const urlStore = photoURLStore();
+    if (urlStore.url) {
+      this.url = urlStore.url;
+    } else {
+      console.log("url이 설정 x");
+    }
     if (this.detail.length > 0) {
       const firstPlace = this.detail[0];
       const parseCoords = {

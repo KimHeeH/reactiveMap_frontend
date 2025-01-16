@@ -86,10 +86,10 @@ import MyAlaram from "./MenuComponents/MyAlaram.vue";
 import MySaved from "./MenuComponents/MySaved.vue";
 import MyTimeLine from "./MenuComponents/MyTimeLine.vue";
 import arrowRightIcon from "../assets/icons/components/ArrowRightIcon.vue";
-import AlaramIcon from "../assets/icons/AlaramIcon.svg";
-import BookMarkIcon from "../assets/icons/BookMarkIcon.svg";
-import ChartLineIcon from "../assets/icons/ChartLineIcon.svg";
-import EditIcon from "../assets/icons/EditIcon.svg";
+import AlaramIcon from "../assets/icons/components/AlaramIconComponent.vue";
+import BookMarkIcon from "../assets/icons/components/BookMarkIconComponent.vue";
+import ChartLineIcon from "../assets/icons/components/ChartLineIconComponent.vue";
+import EditIcon from "../assets/icons/components/EditIconComponent.vue";
 import { eventBus } from "@/eventBus";
 
 export default defineComponent({

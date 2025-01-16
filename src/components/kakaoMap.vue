@@ -7,10 +7,18 @@
       :class="{ animate: isAnimating }"
       @animationend="onAnimationEnd"
     >
-      <div style="font-size: 23px">{{ cleanTitle(placeName || "") }}</div>
-      <div style="margin-top: 10px">{{ placeAddress }}</div>
-      <div class="addIconContainer"><AddIcon @click="clickDetail" /></div>
-      <div>클릭된 좌표는 ({{ coords }})</div>
+      <div v-if="placePhoto">
+        <img
+          :src="placePhoto"
+          alt="Place Photo"
+          style="max-width: 100%; height: 100px"
+        />
+      </div>
+      <div style="display: flex; flex-direction: column; margin-left: 10px">
+        <div style="font-size: 23px">{{ cleanTitle(placeName || "") }}</div>
+        <div style="margin-top: 10px">{{ placeAddress }}</div>
+        <div class="addIconContainer"><AddIcon @click="clickDetail" /></div>
+      </div>
     </div>
   </div>
 </template>
@@ -22,6 +30,9 @@ import { defineComponent, ref, watch } from "vue";
 import { fetchSearchResults } from "../api/mainService";
 import { useStore } from "@/stores/useStore";
 import { addressStore } from "@/stores/useStore";
+import { fetchGetGoogleImage } from "../api/mainService";
+import { fetchGetPlaceImage } from "../api/mainService";
+import { photoURLStore } from "@/stores/useStore";
 interface CoordsObject {
   x: string;
   y: string;
@@ -48,6 +59,7 @@ export default {
       isAnimating: false,
       placeName: null as string | null,
       coordsObject: { x: "", y: "" } as CoordsObject, // coordsObject 타입을 지정하고 초기값을 설정
+      placePhoto: null as string | null,
     };
   },
 
@@ -127,8 +139,10 @@ export default {
     async moveM(latlng: any, map: any, marker: any) {
       const zoomLevel = map.getZoom();
       const targetZoom = 19;
-      const transitionOptions = { duration: 700, easing: "easeOutCubic" };
-      map.panTo(latlng, transitionOptions);
+      map.morph(latlng, targetZoom, {
+        duration: 700, // 애니메이션 지속 시간 (ms)
+        easing: "easeOutCubic", // 부드러운 애니메이션
+      });
       if (zoomLevel !== targetZoom) {
         setTimeout(() => {
           map.setZoom(targetZoom, true); // 부드러운 줌 변경
@@ -170,7 +184,10 @@ export default {
             `${area1} ${area2} ${area3} ${roadName} ${buildingNumber}`.trim();
           this.placeAddress = fullAddress.trim(); // 결과 업데이트
           const placeNameData = await fetchSearchResults(this.placeAddress);
+
           this.placeName = placeNameData.items[0].title;
+          await this.fetchGoogleImage(this.placeName as string);
+
           console.log("PlaceNameData는", placeNameData);
         } else {
           this.placeAddress = "주소를 가져올 수 없습니다.";
@@ -180,6 +197,32 @@ export default {
         this.placeAddress = "오류 발생";
         this.$emit("updatePlaceName", null);
       }
+    },
+    async fetchGoogleImage(Address: string) {
+      try {
+        const encodedAddress = encodeURIComponent(Address);
+        const response = await fetchGetGoogleImage(encodedAddress);
+        console.log("Google API 응답 데이터", response);
+        // const candidates = response.data.candidates;
+        // console.log("candidates", candidates);
+        if (response && response.candidates.length > 0 && response.candidates) {
+          const photos = response.candidates[0].photos;
+          const photoReference = photos[0].photo_reference;
+          if (photoReference) {
+            await this.fetchPlaceImage(photoReference);
+          } else {
+            console.error("No photo reference found in response");
+          }
+        } else {
+          console.error("No candidates found for the given address");
+        }
+      } catch (error) {
+        console.error("Error fetching Google image:", error);
+      }
+    },
+    async fetchPlaceImage(photo_reference: string) {
+      const url = await fetchGetPlaceImage(photo_reference);
+      this.placePhoto = url;
     },
     updateMarker(latlng: any) {
       if (!this.marker) {
@@ -191,11 +234,18 @@ export default {
         this.marker.setPosition(latlng);
       }
     },
-    clickDetail() {
-      // const store = addressStore();
-      // store.setAddress(this.placeAddress);
-      // console.log("addressStore 저장 값", store.address);
+    async clickDetail() {
       this.$emit("updatePlaceName", this.placeAddress);
+      this.$emit("detailClicked", this.placeAddress);
+      if (this.placePhoto) {
+        const store = photoURLStore();
+        try {
+          await store.setUrl(this.placePhoto); // 비동기 처리 완료 후 진행
+          console.log("placePhoto URL이 지정되었습니다.");
+        } catch (error) {
+          console.error("store.setUrl 오류:", error);
+        }
+      }
     },
     onAnimationEnd() {
       this.isAnimating = false;
@@ -239,6 +289,7 @@ export default {
   width: 400px;
   transition: all 0.5s ease;
   padding: 20px;
+  flex-direction: row;
 }
 .place-name.animate {
   animation: slideUp 1s forwards;

@@ -4,12 +4,14 @@
       :user="user"
       :placeAddress="placeAddress"
       v-model="searchQuery"
+      ref="searchBar"
     />
     <MenuBar @updateUserData="updateUserData" />
     <kakaoMap
       ref="kakaoMap"
       :searchQuery="searchQuery"
       @updatePlaceName="updateAddress"
+      @detailClicked="handleDetailClicked"
     />
   </div>
 </template>
@@ -50,6 +52,10 @@ export default defineComponent({
     updateUserData(userData: object) {
       this.user = userData;
       console.log(this.user);
+    },
+    handleDetailClicked(address) {
+      console.log("카카오맵에서 전달받은 주소", address);
+      this.$refs.searchBar.search(address);
     },
   },
 });

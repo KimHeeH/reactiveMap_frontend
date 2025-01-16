@@ -2,6 +2,8 @@ const CLIENT_ID = import.meta.env.VITE_NAVER_CLIENT_ID;
 const CLIENT_SECRET = import.meta.env.VITE_NAVER_CLIENT_SECRET;
 const SEARCH_CLIENT_ID = import.meta.env.VITE_NAVER_SEARCH_CLIENT_ID;
 const SEARCH_CLIENT_SECRET = import.meta.env.VITE_NAVER_SEARCH_CLIENT_SECRET;
+const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
+
 export async function fetchGeocode(keyword: string) {
   try {
     const data = await fetchSearchResults(keyword);
@@ -52,4 +54,26 @@ export async function fetchSearchResults(keyword: string) {
   });
   if (!response.ok) throw new Error("검색 API 호출 실패");
   return response.json();
+}
+import axios from "axios";
+export async function fetchGetGoogleImage(address: string) {
+  try {
+    const response = await axios.get(
+      "http://localhost:3000/google-maps/place-details",
+      {
+        params: {
+          address: address,
+        },
+      }
+    );
+    console.log("MainService Google API 응답 데이터", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Google API 호출 실패", error);
+    throw error;
+  }
+}
+export async function fetchGetPlaceImage(photo_reference: string) {
+  const url = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=200&photo_reference=${photo_reference}&key=${GOOGLE_API_KEY}`;
+  return url;
 }

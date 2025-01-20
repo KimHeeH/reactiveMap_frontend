@@ -11,7 +11,7 @@
         <img
           :src="placePhoto"
           alt="Place Photo"
-          style="max-width: 100%; height: 100px"
+          style="max-width: 100%; height: 100px; width: 120px"
         />
       </div>
       <div style="display: flex; flex-direction: column; margin-left: 10px">
@@ -285,7 +285,8 @@ export default {
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  height: 130px;
+  min-height: 130px;
+  height: auto;
   width: 400px;
   transition: all 0.5s ease;
   padding: 20px;

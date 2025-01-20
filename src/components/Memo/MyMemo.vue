@@ -1,6 +1,7 @@
 <template>
   <div>
     <div style="margin-left: 10px">나의 메모</div>
+    <!-- <div v-if="!recordData"> -->
     <div v-if="noMemo" class="memoContainer">
       <div class="IconContainer"><NoMemoIcon /></div>
       <div style="margin-top: -10px; color: #828282">작성된 메모가 없어요</div>
@@ -24,10 +25,21 @@
       </div>
     </div>
   </div>
+  <!-- <div v-for="(contents, title, place) in recordData">
+      <div class="memoAddContainer">
+        <div class="memoAddTitle">
+          {{ title }}
+        </div>
+        <div class="memoAddContent">
+          {{ contents }}
+        </div>
+      </div>
+    </div> -->
+  <!-- </div> -->
 </template>
 <script lang="ts">
 import axios from "axios";
-import { defineComponent, ref, PropType } from "vue";
+import { defineComponent, ref, PropType, onMounted } from "vue";
 import NoMemoIcon from "../../assets/icons/NoMemoIconComponent.vue";
 import { useStore } from "@/stores/useStore";
 interface MyMemoData {
@@ -67,7 +79,12 @@ export default defineComponent({
     const coords = store.coords;
     const inputTitleValue = ref("");
     const inputContentValue = ref("");
-
+    const recordData = ref<any[]>([]);
+    const placeName = props.locationName[0]?.title.replace(
+      /<\/?[^>]+(>|$)/g,
+      ""
+    );
+    const filterRecordData = ref<any[]>([]);
     const memoRegister = async () => {
       store.setCoords(store.coords);
       try {
@@ -90,12 +107,41 @@ export default defineComponent({
         alert("메모 등록 중 오류가 발생했습니다.");
       }
     };
+    const fetchRecords = async () => {
+      try {
+        const response = await axios.post(
+          "http://localhost:3000/record/select",
+          { id: props.userData.id }
+        );
+        recordData.value = response.data[0].place;
 
+        console.log(recordData);
+      } catch (error) {
+        console.error("Failed to fetch records:", error);
+      }
+    };
+    const fetchFilterRecordData = () => {
+      recordData.value.map((memo) => {
+        if (memo.place == placeName) {
+          filterRecordData.push(memo);
+        }
+      });
+    };
+
+    onMounted(() => {
+      if (props.userData?.id) {
+        fetchRecords();
+      } else {
+        console.warn("UserData is missing");
+      }
+    });
     return {
       inputTitleValue,
       inputContentValue,
       memoRegister,
       coords,
+      recordData,
+      placeName,
     };
   },
 

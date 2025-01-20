@@ -54,6 +54,9 @@
 import { defineComponent, watch, PropType } from "vue";
 import PlaceDetail from "./PlaceDetail.vue";
 import MenuIcon from "../assets/icons/components/MenuIcon.vue";
+import { fetchGetGoogleImage } from "@/api/mainService";
+import { fetchGetPlaceImage } from "@/api/mainService";
+import { photoURLStore } from "@/stores/useStore";
 interface SearchResult {
   title: string;
   address: string;
@@ -79,6 +82,7 @@ export default defineComponent({
     return {
       isDetail: false,
       placeDetail: [] as SearchResult[], // 타입 지정
+      placePhoto: null as string | null,
     };
   },
   props: {
@@ -98,12 +102,45 @@ export default defineComponent({
   },
 
   methods: {
-    goDetailPlace(place: SearchResult) {
+    async goDetailPlace(place: SearchResult) {
+      try {
+        const encodedAddress = encodeURIComponent(this.cleanTitle(place.title));
+        const response = await fetchGetGoogleImage(encodedAddress);
+        console.log("Search Google API 응답 데이터", response);
+        if (response && response.candidates.length > 0 && response.candidates) {
+          const photos = response.candidates[0].photos;
+          const photoReference = photos[0].photo_reference;
+          if (photoReference) {
+            await this.fetchPlaceImage(photoReference);
+          } else {
+            console.error("No photo reference found in response");
+          }
+        } else {
+          console.error("No candidates found for the given address");
+        }
+      } catch (error) {
+        console.error("Error fetching Google image:", error);
+      }
       console.log(this.isDetail);
       this.isDetail = !this.isDetail;
       this.placeDetail = [place]; // 선택한 장소의 세부 정보를 저장
       console.log(this.isDetail);
       console.log(this.searchResults);
+      console.log(place.address);
+    },
+    async fetchPlaceImage(photo_reference: string) {
+      const url = await fetchGetPlaceImage(photo_reference);
+
+      this.placePhoto = url;
+      if (this.placePhoto) {
+        const store = photoURLStore();
+        try {
+          await store.setUrl(this.placePhoto);
+          console.log("placePhoto URL이 지정되었습니다.");
+        } catch (error) {
+          console.error("store.setURL 오류");
+        }
+      }
     },
 
     cleanTitle(title: string): string {

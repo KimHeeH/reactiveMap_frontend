@@ -161,7 +161,9 @@ export default defineComponent({
 }
 img {
   width: 99%;
+  max-height: 320px;
 }
+
 .title {
   font-size: 24px;
   margin-left: 5px;

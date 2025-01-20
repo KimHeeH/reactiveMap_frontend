@@ -28,7 +28,7 @@
     </div>
     <div v-if="user">
       <div class="currentComponent">
-        <component :userdata="user" :is="currentComponent" />
+        <component :userData="user" :is="currentComponent" />
       </div>
       <div class="menuIconList" v-if="!currentComponent">
         <div class="iconContainer" @click="currentComponent = 'MyMemoRecords'">

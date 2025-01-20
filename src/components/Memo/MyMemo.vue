@@ -120,13 +120,13 @@ export default defineComponent({
         console.error("Failed to fetch records:", error);
       }
     };
-    const fetchFilterRecordData = () => {
-      recordData.value.map((memo) => {
-        if (memo.place == placeName) {
-          filterRecordData.push(memo);
-        }
-      });
-    };
+    // const fetchFilterRecordData = () => {
+    //   recordData.value.map((memo) => {
+    //     if (memo.place == placeName) {
+    //       filterRecordData.push(memo);
+    //     }
+    //   });
+    // };
 
     onMounted(() => {
       if (props.userData?.id) {

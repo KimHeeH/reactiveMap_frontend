@@ -26,7 +26,7 @@ interface UserData {
 export default defineComponent({
   name: "MyMemoRecordsComponent",
   props: {
-    userdata: {
+    userData: {
       type: Object as PropType<UserData>,
       required: true,
     },
@@ -39,7 +39,7 @@ export default defineComponent({
       try {
         const response = await axios.post(
           "http://localhost:3000/record/select",
-          { id: props.userdata.id }
+          { id: props.userData.id }
         );
         recordData.value = response.data;
       } catch (error) {
@@ -59,7 +59,7 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      if (props.userdata?.id) {
+      if (props.userData?.id) {
         fetchRecords();
       } else {
         console.warn("User data is missing or invalid.");

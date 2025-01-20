@@ -24,7 +24,9 @@
       </div>
     </div>
 
-    <div class="uploadBtn"><div>업로드</div></div>
+    <div class="uploadBtn" style="cursor: pointer" @click="uploadPhoto">
+      <div>업로드</div>
+    </div>
   </div>
 </template>
 <script lang="ts">
@@ -65,6 +67,9 @@ export default {
       onDragOver,
       onDrop,
     };
+  },
+  methods: {
+    uploadPhoto() {},
   },
 };
 </script>

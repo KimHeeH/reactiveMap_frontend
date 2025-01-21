@@ -1,5 +1,5 @@
 <template>
-  <div class="menu-bar" v-if="menuOpen">
+  <div class="menu-bar w-full h-full" v-if="menuOpen">
     <div class="iconsContainer">
       <div
         v-if="currentComponent"
@@ -290,15 +290,13 @@ export default defineComponent({
   color: #2d2d2d;
 }
 .iconsContainer {
-  margin: 0 30px 20px 40px;
+  margin: 0 30px 0 40px;
 
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-.currentComponent {
-  padding-left: 40px;
-}
+
 .arrowRightIconContainer svg {
   width: 40px; /* 아이콘 크기 통일 */
   height: 40px;

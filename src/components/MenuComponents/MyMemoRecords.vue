@@ -1,12 +1,16 @@
 <template>
-  <div class="memoMenuTitle">나의 메모 기록</div>
+  <div class="MenuTitle"><div>나의 메모 기록</div></div>
+  <div v-if="recordData.length === 0" class="noMemoText">
+    등록된 메모가 없어요
+  </div>
+
   <div
     v-for="(contents, place, title) in groupedRecords"
     :key="title"
     class="addMomoContainer"
   >
     <div class="memoTitle">{{ place }}</div>
-    <div>메모({{ contents.length }})</div>
+    <div style="font-size: 14px">메모({{ contents.length }})</div>
     <div class="memoContents">
       <div class="memoContent" v-for="content in contents">{{ content }}</div>
     </div>
@@ -68,19 +72,32 @@ export default defineComponent({
 
     return {
       groupedRecords,
+      recordData,
     };
   },
 });
 </script>
 
 <style>
-.memoMenuTitle {
+.noMemoText {
+  text-align: center;
+  margin-top: 200px;
+  font-size: 16px;
+  color: #333;
+}
+.MenuTitle {
   font-size: 20px;
   font-weight: 600;
+  text-align: center; /* 중앙 정렬 */
+  border-bottom: 1px solid #ddd; /* 구분선 */
+}
+.MenuTitle div {
+  margin-bottom: 10px;
 }
 .memoTitle {
   font-size: 20px;
   font-weight: 600;
+  margin-bottom: 10px;
 }
 .memoContents {
   font-size: 18px;
@@ -92,6 +109,7 @@ export default defineComponent({
   height: auto;
   margin-top: 40px;
   padding: 20px;
+  margin-left: 40px;
 }
 .memoContent {
   background-color: #fbfbfb;
@@ -99,6 +117,6 @@ export default defineComponent({
   height: 40px;
   display: flex;
   align-items: center;
-  padding: 10px;
+  font-size: 16px;
 }
 </style>

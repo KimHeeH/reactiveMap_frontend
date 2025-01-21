@@ -68,5 +68,6 @@ export default defineComponent({
   gap: 16px;
   width: 100%; /* 부모 요소의 너비를 명확히 설정 */
   height: 100vh; /* 부모 요소의 높이 설정 */
+  /* overflow: hidden; 스크롤 방지 */
 }
 </style>

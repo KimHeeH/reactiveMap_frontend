@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div style="font-size: 20px; font-weight: 600">저장됨</div>
+    <div class="MenuTitle"><div>저장됨</div></div>
 
     <div>
       <div class="savedItem" v-for="place in savedData">
@@ -66,6 +66,7 @@ export default defineComponent({
   align-items: center;
   gap: 10px;
   margin-top: 20px;
+  padding-left: 40px;
 }
 .savedImg {
   width: 80px;

@@ -160,7 +160,7 @@ export default defineComponent({
   height: 100vh; /* 화면 전체 높이 */
 }
 img {
-  width: 99%;
+  width: 100%;
   max-height: 320px;
 }
 

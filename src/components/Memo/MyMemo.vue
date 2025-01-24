@@ -42,6 +42,7 @@ import axios from "axios";
 import { defineComponent, ref, PropType, onMounted } from "vue";
 import NoMemoIcon from "../../assets/icons/NoMemoIconComponent.vue";
 import { useStore } from "@/stores/useStore";
+import { photoURLStore } from "@/stores/useStore";
 interface MyMemoData {
   noMemo: boolean;
 }
@@ -76,6 +77,8 @@ export default defineComponent({
   },
   setup(props) {
     const store = useStore();
+    const photoStore = photoURLStore();
+    // const url = store.url || "";
     const coords = store.coords;
     const inputTitleValue = ref("");
     const inputContentValue = ref("");
@@ -97,6 +100,7 @@ export default defineComponent({
             lat: store.coords.y,
             title: inputTitleValue.value,
             content: inputContentValue.value,
+            // images:
           }
         );
         inputContentValue.value = "";

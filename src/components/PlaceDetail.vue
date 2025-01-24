@@ -10,7 +10,7 @@
     <div class="contentContainer">
       <div class="iconList">
         <div class="icon">
-          <div @click="bookmark"><SaveIcon ref="saveIcon" /></div>
+          <div @click="bookmark(url)"><SaveIcon ref="saveIcon" /></div>
           <div class="icon-font">저장</div>
         </div>
         <div class="icon">
@@ -25,7 +25,9 @@
       <div class="MyMemoContainer" ref="myMemo">
         <MyMemo :userData="userData" :locationName="detail" />
       </div>
-      <div class="MyPictureContainer" ref="myPicture"><MyPicture /></div>
+      <div class="MyPictureContainer" ref="myPicture">
+        <MyPicture :userData="userData" :detail="detail" />
+      </div>
     </div>
   </div>
 </template>
@@ -69,7 +71,8 @@ export default defineComponent({
     const url = store.url || "";
     // props.detail은 Place[] 타입으로 추론
     console.log(userData); // SaveIcon이 어떻게 로드되는지 확인
-    const bookmark = async () => {
+    const bookmark = async (url) => {
+      console.log("url은", url);
       if (userData) {
         try {
           const response = await axios.post(
@@ -79,6 +82,7 @@ export default defineComponent({
               place: detail[0]?.title.replace(/<\/?[^>]+(>|$)/g, ""),
               lon: detail[0]?.mapx,
               lat: detail[0]?.mapy,
+              images: url,
             }
           );
           if (response.data.success === true) {

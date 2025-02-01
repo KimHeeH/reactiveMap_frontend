@@ -69,6 +69,10 @@ export default defineComponent({
       type: Array as PropType<Place[]>,
       required: true,
     },
+    imgUrl: {
+      type: String,
+      required: false,
+    },
   },
   data(): MyMemoData {
     return {
@@ -89,6 +93,8 @@ export default defineComponent({
     );
     const filterRecordData = ref<any[]>([]);
     const memoRegister = async () => {
+      console.log("클릭됨");
+      console.log("img 링크", props.imgUrl);
       store.setCoords(store.coords);
       try {
         const response = await axios.post(
@@ -100,7 +106,7 @@ export default defineComponent({
             lat: store.coords.y,
             title: inputTitleValue.value,
             content: inputContentValue.value,
-            // images:
+            images: props.imgUrl,
           }
         );
         inputContentValue.value = "";

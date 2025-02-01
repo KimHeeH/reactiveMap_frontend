@@ -267,6 +267,7 @@ export default {
   width: 100%; /* 너비를 100%로 설정 */
   height: 400px; /* 높이를 400px로 설정 */
 }
+
 .place-name {
   position: absolute;
   bottom: 50px;

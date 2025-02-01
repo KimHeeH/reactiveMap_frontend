@@ -23,7 +23,7 @@
         </div>
       </div>
       <div class="MyMemoContainer" ref="myMemo">
-        <MyMemo :userData="userData" :locationName="detail" />
+        <MyMemo :imgUrl="url" :userData="userData" :locationName="detail" />
       </div>
       <div class="MyPictureContainer" ref="myPicture">
         <MyPicture :userData="userData" :detail="detail" />
